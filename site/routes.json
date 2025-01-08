@@ -1,0 +1,18 @@
+{
+  "/": {
+    "layout": "siteIndex",
+    "context": {
+      "meta": {
+        "title": "gustwind-template",
+        "description": "A simple starting point for Gustwind projects"
+      }
+    },
+    "dataSources": {
+      "readme": {
+        "operation": "processMarkdown",
+        "parameters": ["./README.md"]
+      }
+    },
+    "scripts": [{ "name": "hello" }]
+  }
+}

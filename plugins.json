@@ -1,0 +1,57 @@
+{
+  "env": {
+    "GUSTWIND_PATH": "https://deno.land/x/gustwind@v0.77.2"
+  },
+  "plugins": [
+    {
+      "path": "${GUSTWIND_PATH}/plugins/meta/mod.ts",
+      "options": { "inputPath": "./site/meta.json" }
+    },
+    {
+      "path": "${GUSTWIND_PATH}/routers/config-router/mod.ts",
+      "options": {
+        "dataSourcesPath": "./site/dataSources.ts",
+        "routesPath": "./site/routes.json"
+      }
+    },
+    {
+      "path": "${GUSTWIND_PATH}/renderers/htmlisp-renderer/mod.ts",
+      "options": {
+        "components": [
+          { "path": "./site/components" },
+          { "path": "./site/layouts" }
+        ],
+        "globalUtilitiesPath": "./site/globalUtilities.ts"
+      }
+    },
+    {
+      "path": "${GUSTWIND_PATH}/plugins/copy/mod.ts",
+      "options": {
+        "inputPath": "./assets",
+        "outputPath": "./assets"
+      }
+    },
+    {
+      "path": "${GUSTWIND_PATH}/plugins/script/mod.ts",
+      "options": {
+        "scripts": [
+          {
+            "type": "text/javascript",
+            "src": "https://unpkg.com/sidewind@8.0.0/dist/sidewind.umd.production.min.js"
+          }
+        ],
+        "scriptsPath": ["./site/scripts"]
+      }
+    },
+    {
+      "path": "${GUSTWIND_PATH}/plugins/twind/mod.ts",
+      "options": { "setupPath": "./site/twindSetup.ts" }
+    },
+    {
+      "path": "${GUSTWIND_PATH}/plugins/sitemap/mod.ts"
+    },
+    {
+      "path": "${GUSTWIND_PATH}/plugins/stats/mod.ts"
+    }
+  ]
+}
