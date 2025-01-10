@@ -8,10 +8,6 @@
       }
     },
     "dataSources": {
-      "readme": {
-        "operation": "processMarkdown",
-        "parameters": ["./README.md"]
-      },
       "bookIndex": {
         "operation": "indexBook",
         "parameters": ["./book/chapters.tex", "./book/appendices.tex"]
