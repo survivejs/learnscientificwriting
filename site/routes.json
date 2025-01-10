@@ -3,16 +3,19 @@
     "layout": "siteIndex",
     "context": {
       "meta": {
-        "title": "gustwind-template",
-        "description": "A simple starting point for Gustwind projects"
+        "title": "Learn scientific writing",
+        "description": "Scientific writing is an art of its own. This site will help you to get started."
       }
     },
     "dataSources": {
       "readme": {
         "operation": "processMarkdown",
         "parameters": ["./README.md"]
+      },
+      "bookIndex": {
+        "operation": "indexBook",
+        "parameters": ["./book/chapters.tex", "./book/appendices.tex"]
       }
-    },
-    "scripts": [{ "name": "hello" }]
+    }
   }
 }

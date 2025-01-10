@@ -1,4 +1,6 @@
-import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.77.2/types.ts";
+import { parseLatex } from "https://deno.land/x/gustwind@v0.79.0/htmlisp/parsers/latex/parseLatex.ts";
+import { el } from "https://deno.land/x/gustwind@v0.79.0/htmlisp/parsers/latex/defaultExpressions.ts";
+import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.79.0/types.ts";
 import getMarkdown from "./transforms/markdown.ts";
 
 function init({ load }: DataSourcesApi) {
@@ -18,7 +20,36 @@ function init({ load }: DataSourcesApi) {
     );
   }
 
-  return { processMarkdown };
+  async function indexBook(chapterFile: string, appendixFile: string) {
+    const chaptersText = await load.textFile(chapterFile);
+    const appendicesText = await load.textFile(appendixFile);
+    const chapters = parseBookIndex(chaptersText);
+    const appendices = parseBookIndex(appendicesText);
+
+    return { chapters, appendices };
+  }
+
+  return { indexBook, processMarkdown };
+}
+
+function parseBookIndex(text: string) {
+  const ast = parseLatex(text, {
+    singles: {
+      chapter: el("title"),
+      label: el("label"),
+      input: el("slug"),
+    },
+  });
+
+  const titles = ast.filter((n) => n.type === "title").map((n) =>
+    n.children[0]
+  );
+  const slugs = ast.filter((n) => n.type === "slug").map((n) =>
+    // @ts-expect-error This should be a string
+    n.children[0].split("chapters/")[1].split("-").slice(1).join("-")
+  );
+
+  return titles.map((title, i) => ({ title, slug: slugs[i] }));
 }
 
 export { init };

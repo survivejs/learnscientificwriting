@@ -7,7 +7,7 @@ import highlightJS from "https://unpkg.com/highlight.js@11.10.0/es/languages/jav
 import highlightJSON from "https://unpkg.com/highlight.js@11.10.0/es/languages/json";
 import highlightTS from "https://unpkg.com/highlight.js@11.10.0/es/languages/typescript";
 import highlightYAML from "https://unpkg.com/highlight.js@11.10.0/es/languages/yaml";
-import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.78.0/types.ts";
+import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.79.0/types.ts";
 import twindSetup from "../twindSetup.ts";
 
 highlight.registerLanguage("bash", highlightBash);
