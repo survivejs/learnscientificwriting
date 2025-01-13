@@ -1,6 +1,16 @@
-import { parseLatex } from "https://deno.land/x/gustwind@v0.79.0/htmlisp/parsers/latex/parseLatex.ts";
-import { el } from "https://deno.land/x/gustwind@v0.79.0/htmlisp/parsers/latex/defaultExpressions.ts";
-import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.79.0/types.ts";
+import { htmlispToHTMLSync } from "https://deno.land/x/gustwind@v0.79.4/htmlisp/htmlispToHTMLSync.ts";
+import { astToHtmlSync } from "https://deno.land/x/gustwind@v0.79.4/htmlisp/utilities/astToHtmlSync.ts";
+import { parseLatex } from "https://deno.land/x/gustwind@v0.79.4/htmlisp/parsers/latex/parseLatex.ts";
+import { parseBibtexCollection } from "https://deno.land/x/gustwind@v0.79.4/htmlisp/parsers/latex/parseBibtexCollection.ts";
+import {
+  blocks,
+  cites,
+  doubles,
+  el,
+  lists,
+  singles,
+} from "https://deno.land/x/gustwind@v0.79.4/htmlisp/parsers/latex/defaultExpressions.ts";
+import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.79.4/types.ts";
 import getMarkdown from "./transforms/markdown.ts";
 
 function init({ load }: DataSourcesApi) {
@@ -23,14 +33,14 @@ function init({ load }: DataSourcesApi) {
   async function indexBook(
     chapterFile: string,
     appendixFile: string,
-    o: { flatten: boolean },
+    o?: { flatten: boolean },
   ) {
     const chaptersText = await load.textFile(chapterFile);
     const appendicesText = await load.textFile(appendixFile);
     const chapters = parseBookIndex(chaptersText);
     const appendices = parseBookIndex(appendicesText);
 
-    if (o.flatten) {
+    if (o?.flatten) {
       return chapters.concat(appendices);
     }
 
@@ -46,10 +56,35 @@ function init({ load }: DataSourcesApi) {
       // next: MarkdownWithFrontmatter;
     },
   ) {
-    // TODO: Convert chapterText to HTML
-    const chapterText = await load.textFile(path);
+    // TODO: Load this once at parent instead to save effort
+    const bibtexText = await load.textFile(
+      "book/chapters/bibliography/english.bib",
+    );
+    const bibtex = parseBibtexCollection(bibtexText);
 
-    return {};
+    const chapterText = await load.textFile(path);
+    // TODO: Add cites to singles and connect it to bibtex
+    const ast = parseLatex(chapterText, {
+      blocks,
+      doubles,
+      lists,
+      singles,
+    });
+    const content = astToHtmlSync(ast, htmlispToHTMLSync);
+
+    return {
+      data: {
+        title: "TODO",
+        author: {
+          name: "TODO",
+          twitter: "TODO",
+        },
+      },
+      tableOfContents: [], // TODO
+      content,
+      previous: "TODO",
+      next: "TODO",
+    };
   }
 
   return { indexBook, processMarkdown, processChapter };
