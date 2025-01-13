@@ -1,0 +1,16 @@
+<div
+  class="w-full h-1 bg-secondary"
+  x-state="{ scrollY: 0, scrollHeight: 0 }"
+  x-scroll="{
+    state: {
+      scrollRatio: window.scrollY / (document.body.scrollHeight - window.innerHeight)
+    }
+  }"
+>
+  <span
+    class="bg-primary inline-block h-1 absolute top-0 z-50"
+    x-attr
+    @style="'width:' + state.scrollRatio * 100 + '%;'"
+    >&nbsp;</span
+  >
+</div>

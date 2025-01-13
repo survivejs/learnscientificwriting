@@ -13,5 +13,20 @@
         "parameters": ["./book/chapters.tex", "./book/appendices.tex"]
       }
     }
+  },
+  "book": {
+    "layout": "bookIndex",
+    "context": {
+      "meta": {
+        "title": "The Process of Scientific Writing",
+        "description": "Table of contents for the book"
+      }
+    },
+    "dataSources": {
+      "bookIndex": {
+        "operation": "indexBook",
+        "parameters": ["./book/chapters.tex", "./book/appendices.tex"]
+      }
+    }
   }
 }

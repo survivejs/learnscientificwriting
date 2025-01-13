@@ -1,21 +1,27 @@
-<footer class="py-8 font-light bg-emerald-50">
+<footer class="py-8 font-light bg-primary">
   <div class="flex flex-col container mx-auto gap-4">
     <section
       class="md:mx-auto px-4 sm:px-0 grid grid-rows-3 md:grid-rows-none md:grid-cols-3 gap-4 md:gap-8 w-full md:max-w-3xl"
     >
       <div class="flex flex-col">
-        <h2>About</h2>
+        <Heading level="2">About</Heading>
         <div class="font-thin">
           The purpose of this site is to support you in your academic publishing
           efforts.
         </div>
       </div>
       <div class="flex flex-col">
-        <h2>Credits</h2>
+        <Heading level="2">Credits</Heading>
         <Markdown as="div" class="font-thin"
           >The content of this site was developed by [Juho
           Vepsäläinen](https://survivejs.com).
         </Markdown>
+      </div>
+      <div class="flex flex-col">
+        <Heading level="2">Navigation</Heading>
+        <div class="font-thin flex flex-col">
+          <Navigation />
+        </div>
       </div>
     </section>
   </div>

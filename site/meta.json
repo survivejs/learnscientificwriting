@@ -1,5 +1,11 @@
 {
   "language": "en",
-  "siteName": "gustwind-template",
-  "url": "TODO"
+  "siteName": "Learn scientific writing",
+  "url": "https://learnscientificwriting.com",
+  "colors": {
+    "primary": "#effdf6",
+    "muted": "#346065",
+    "warning": "#f08b3f",
+    "secondary": "#b6fff8"
+  }
 }

@@ -1,6 +1,6 @@
 <BaseLayout>
   <slot name="content">
-    <header class="bg-emerald-50 py-8">
+    <header class="bg-primary py-8">
       <div class="sm:mx-auto px-4 py-4 sm:py-8 max-w-3xl flex">
         <div class="flex flex-col gap-8">
           <h1 class="text-4xl md:text-4xl">
@@ -12,27 +12,30 @@
         </div>
       </div>
     </header>
-
     <div
       class="md:mx-auto my-8 px-4 md:px-0 w-full lg:max-w-3xl prose lg:prose-xl"
     >
-      <Markdown as="div"
-        >Scientific writing sounds like something difficult and arcane. The
-        purpose of this website is to demystify this complex topic and give you
-        the tools you require to complete your research tasks. I have developed
-        the resource to support my BSc/MSc students and included to it learnings
-        from my own PhD process. My hope is that this resource can support you
-        in your academic publishing efforts.
-      </Markdown>
-      <Markdown as="div"
-        >The site has been structured as a book called "The Process of
-        Scientific Writing". I have made the book freely available although I
-        intend to offer a commercial version of it that you may optionally
-        purchase in case it felt like the content was useful for you in a manner
-        or another.
-      </Markdown>
-      <h2>Table of contents</h2>
-      <div>todo</div>
+      <section>
+        <Heading class="sr-only" level="2">Description</Heading>
+        <Markdown as="div"
+          >Scientific, or academic, writing sounds like something difficult and
+          arcane. The purpose of this website is to demystify this complex topic
+          and give you the tools you require to complete your research tasks. I
+          have developed the resource to support my BSc/MSc students and
+          included to it learnings from my own PhD process. My hope is that this
+          resource can support you in your academic publishing efforts.
+        </Markdown>
+        <Markdown as="div"
+          >The site has been structured as a book called "The Process of
+          Scientific Writing". I have made the book freely available although I
+          intend to offer a commercial version of it that you may optionally
+          purchase in case it felt like the content was useful for you in a
+          manner or another.
+        </Markdown>
+      </section>
+      <section>
+        <BookTableOfContents />
+      </section>
     </div>
   </slot>
 </BaseLayout>

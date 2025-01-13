@@ -1,0 +1,23 @@
+<Heading level="2">Table of contents</Heading>
+<Heading level="3">Chapters</Heading>
+<ol class="flex flex-col gap-2" &foreach="(get context bookIndex.chapters)">
+  <li>
+    <div class="flex flex-col gap-1">
+      <SiteLink
+        &href="(urlJoin book (get props slug) /)"
+        &children="(get props title)"
+      />
+    </div>
+  </li>
+</ol>
+<Heading level="3">Appendices</Heading>
+<ol class="flex flex-col gap-2" &foreach="(get context bookIndex.appendices)">
+  <li>
+    <div class="flex flex-col gap-1">
+      <SiteLink
+        &href="(urlJoin book (get props slug) /)"
+        &children="(get props title)"
+      />
+    </div>
+  </li>
+</ol>
