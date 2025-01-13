@@ -4,7 +4,7 @@
   <li>
     <div class="flex flex-col gap-1">
       <SiteLink
-        &href="(urlJoin book (get props slug) /)"
+        &href="(urlJoin (get props prefix) (get props slug) /)"
         &children="(get props title)"
       />
     </div>
@@ -15,7 +15,7 @@
   <li>
     <div class="flex flex-col gap-1">
       <SiteLink
-        &href="(urlJoin book (get props slug) /)"
+        &href="(urlJoin (get props prefix) (get props slug) /)"
         &children="(get props title)"
       />
     </div>
