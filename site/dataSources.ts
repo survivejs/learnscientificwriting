@@ -20,16 +20,39 @@ function init({ load }: DataSourcesApi) {
     );
   }
 
-  async function indexBook(chapterFile: string, appendixFile: string) {
+  async function indexBook(
+    chapterFile: string,
+    appendixFile: string,
+    o: { flatten: boolean },
+  ) {
     const chaptersText = await load.textFile(chapterFile);
     const appendicesText = await load.textFile(appendixFile);
     const chapters = parseBookIndex(chaptersText);
     const appendices = parseBookIndex(appendicesText);
 
+    if (o.flatten) {
+      return chapters.concat(appendices);
+    }
+
     return { chapters, appendices };
   }
 
-  return { indexBook, processMarkdown };
+  // TODO: Attach prev/next info during indexing pass
+  async function processChapter(
+    // { path, previous, next }: {
+    { path }: {
+      path: string;
+      // previous: MarkdownWithFrontmatter;
+      // next: MarkdownWithFrontmatter;
+    },
+  ) {
+    // TODO: Convert chapterText to HTML
+    const chapterText = await load.textFile(path);
+
+    return {};
+  }
+
+  return { indexBook, processMarkdown, processChapter };
 }
 
 function parseBookIndex(text: string) {
@@ -48,8 +71,13 @@ function parseBookIndex(text: string) {
     // @ts-expect-error This should be a string
     n.children[0].split("chapters/")[1].split("-").slice(1).join("-")
   );
+  const paths = ast.filter((n) => n.type === "slug").map((n) => n.children[0]);
 
-  return titles.map((title, i) => ({ title, slug: slugs[i] }));
+  return titles.map((title, i) => ({
+    title,
+    slug: slugs[i],
+    path: `book/${paths[i]}.tex`,
+  }));
 }
 
 export { init };

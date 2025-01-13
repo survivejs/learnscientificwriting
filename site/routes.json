@@ -27,6 +27,38 @@
         "operation": "indexBook",
         "parameters": ["./book/chapters.tex", "./book/appendices.tex"]
       }
+    },
+    "expand": {
+      "matchBy": {
+        "name": "chapters",
+        "indexer": {
+          "operation": "indexBook",
+          "parameters": [
+            "./book/chapters.tex",
+            "./book/appendices.tex",
+            { "flatten": true }
+          ]
+        },
+        "slug": "slug"
+      },
+      "layout": "bookPage",
+      "dataSources": {
+        "document": {
+          "operation": "processChapter"
+        }
+      },
+      "context": {
+        "meta": {
+          "title": {
+            "utility": "get",
+            "parameters": ["context", "document.data.title"]
+          },
+          "description": {
+            "utility": "get",
+            "parameters": ["context", "document.data.description"]
+          }
+        }
+      }
     }
   }
 }
