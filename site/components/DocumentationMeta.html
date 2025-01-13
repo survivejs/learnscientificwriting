@@ -1,0 +1,127 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-row gap-4 justify-between text-sm">
+    <div class="flex flex-col gap-2">
+      <div
+        &visibleIf="(get props document.data.author.name)"
+        class="flex flex-col sm:flex-row gap-1"
+      >
+        <span>Author:</span>
+        <SiteLink
+          class="font-extralight"
+          &children="(get props document.data.author.name)"
+          &href="(get props document.data.author.twitter)"
+        ></SiteLink>
+      </div>
+      <div
+        &visibleIf="(get props document.data.editors)"
+        class="flex flex-col sm:flex-row gap-1"
+      >
+        <span>Editors:</span>
+        <ul
+          class="inline-flex flex flex-row gap-2"
+          &foreach="(get props document.data.editors)"
+        >
+          <li>
+            <SiteLink
+              class="font-extralight"
+              &children="(get props name)"
+              &href="(get props twitter)"
+            />
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div &visibleIf="(get props document.data.topics)" class="-mt-1">
+      <Heading level="2" class="sr-only">Topics</Heading>
+      <ul
+        class="flex flex-col sm:flex-row gap-2 sm:gap-4 text-sm whitespace-nowrap"
+        &foreach="(get props document.data.topics)"
+      >
+        <li>
+          <Badge>
+            <SiteLink
+              class="p-1 font-extralight"
+              &children="(get props title)"
+              &href="(urlJoin / blog topics (get props slug) /)"
+            />
+          </Badge>
+        </li>
+      </ul>
+    </div>
+    <div class="flex flex-col gap-2">
+      <div
+        &visibleIf="(get props document.data.date)"
+        class="flex flex-col sm:flex-row gap-1"
+      >
+        <span>Published:</span>
+        <FormattedTime
+          class="font-extralight"
+          &date="(get props document.data.date)"
+        />
+      </div>
+      <div
+        &visibleIf="(get props document.data.updateDate)"
+        class="flex flex-col sm:flex-row gap-1"
+      >
+        <span>Updated:</span>
+        <FormattedTime
+          class="font-extralight"
+          &date="(get props document.data.updateDate)"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="flex flex-row gap-4 justify-between text-sm"
+    &visibleIf="(or (get props previous) (get props next))"
+  >
+    <div class="flex flex-col gap-2">
+      <div class="flex flex-row gap-2" &visibleIf="(get props previous)">
+        <span>←</span><span>Previous</span>
+      </div>
+      <div &visibleIf="(get props previous)">
+        <SiteLink
+          &href="(get props previous.data.slug)"
+          &children="(get props previous.data.title)"
+        ></SiteLink>
+      </div>
+    </div>
+    <div class="flex flex-col gap-2">
+      <div class="flex flex-row gap-2 ml-auto" &visibleIf="(get props next)">
+        <span>Next</span><span>→</span>
+      </div>
+      <div class="text-right" &visibleIf="(get props next)">
+        <SiteLink
+          &href="(get props next.data.slug)"
+          &children="(get props next.data.title)"
+        ></SiteLink>
+      </div>
+    </div>
+  </div>
+  <div
+    class="fixed bottom-0 mb-4 pr-8 sm:hidden flex flex-row gap-4 justify-between w-full"
+  >
+    <div class="flex flex-col gap-2 bg-white">
+      <div class="flex flex-row gap-2" &visibleIf="(get props previous)">
+        <span>←</span><span>Previous</span>
+      </div>
+      <div &visibleIf="(get props previous)">
+        <SiteLink
+          &href="(get props previous.data.slug)"
+          &children="(get props previous.data.title)"
+        ></SiteLink>
+      </div>
+    </div>
+    <div class="flex flex-col gap-2 bg-white">
+      <div class="flex flex-row gap-2 ml-auto" &visibleIf="(get props next)">
+        <span>Next</span><span>→</span>
+      </div>
+      <div class="text-right" &visibleIf="(get props next)">
+        <SiteLink
+          &href="(get props next.data.slug)"
+          &children="(get props next.data.title)"
+        ></SiteLink>
+      </div>
+    </div>
+  </div>
+</div>

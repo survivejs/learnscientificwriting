@@ -1,0 +1,20 @@
+<nav
+  x-label="parent"
+  x-state="{ closest: {} }"
+  x-closest="{ state: { closest: document.querySelectorAll('main h2, main h3') } }"
+>
+  <ul &foreach="(get props toc)" class="flex flex-col gap-2">
+    <li>
+      <a
+        x-attr
+        class="hover:text-primary"
+        &@class="(concat
+          '[element.firstChild?.textContent.trim() === parent.closest?.firstChild?.textContent.trim() && `'
+          (tw underline)
+          '`]')"
+        &href="(concat # (get props slug))"
+        &children="(get props raw)"
+      ></a>
+    </li>
+  </ul>
+</nav>
