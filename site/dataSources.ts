@@ -1,7 +1,7 @@
-import { htmlispToHTMLSync } from "https://deno.land/x/gustwind@v0.79.4/htmlisp/htmlispToHTMLSync.ts";
-import { astToHtmlSync } from "https://deno.land/x/gustwind@v0.79.4/htmlisp/utilities/astToHtmlSync.ts";
-import { parseLatex } from "https://deno.land/x/gustwind@v0.79.4/htmlisp/parsers/latex/parseLatex.ts";
-import { parseBibtexCollection } from "https://deno.land/x/gustwind@v0.79.4/htmlisp/parsers/latex/parseBibtexCollection.ts";
+import { htmlispToHTMLSync } from "https://deno.land/x/gustwind@v0.80.0/htmlisp/htmlispToHTMLSync.ts";
+import { astToHTMLSync } from "https://deno.land/x/gustwind@v0.80.0/htmlisp/utilities/astToHTMLSync.ts";
+import { parseLatex } from "https://deno.land/x/gustwind@v0.80.0/htmlisp/parsers/latex/parseLatex.ts";
+import { parseBibtexCollection } from "https://deno.land/x/gustwind@v0.80.0/htmlisp/parsers/latex/parseBibtexCollection.ts";
 import {
   blocks,
   cites,
@@ -9,8 +9,8 @@ import {
   el,
   lists,
   singles,
-} from "https://deno.land/x/gustwind@v0.79.4/htmlisp/parsers/latex/defaultExpressions.ts";
-import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.79.4/types.ts";
+} from "https://deno.land/x/gustwind@v0.80.0/htmlisp/parsers/latex/defaultExpressions.ts";
+import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.80.0/types.ts";
 import getMarkdown from "./transforms/markdown.ts";
 
 function init({ load }: DataSourcesApi) {
@@ -70,7 +70,7 @@ function init({ load }: DataSourcesApi) {
       lists,
       singles,
     });
-    const content = astToHtmlSync(ast, htmlispToHTMLSync);
+    const content = astToHTMLSync(ast, htmlispToHTMLSync);
 
     return {
       data: {
