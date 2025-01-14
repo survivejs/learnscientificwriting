@@ -47,9 +47,16 @@ function init({ load }: DataSourcesApi) {
     return { chapters, appendices };
   }
 
+  async function loadBibtex() {
+    const bibtexText = await load.textFile(
+      "book/chapters/bibliography/english.bib",
+    );
+
+    return parseBibtexCollection(bibtexText);
+  }
+
   // TODO: Attach prev/next info during indexing pass
   async function processChapter(
-    // { path, previous, next }: {
     { path, title }: {
       path: string;
       title: string;
@@ -57,11 +64,8 @@ function init({ load }: DataSourcesApi) {
       // next: MarkdownWithFrontmatter;
     },
   ) {
-    // TODO: Load this once at parent instead to save effort
-    const bibtexText = await load.textFile(
-      "book/chapters/bibliography/english.bib",
-    );
-    const bibtex = parseBibtexCollection(bibtexText);
+    // @ts-expect-error This is fine
+    const { bibtex } = this.parentDataSources;
 
     const chapterText = await load.textFile(path);
     const ast = parseLatex(chapterText, {
@@ -88,7 +92,7 @@ function init({ load }: DataSourcesApi) {
     };
   }
 
-  return { indexBook, processMarkdown, processChapter };
+  return { indexBook, loadBibtex, processMarkdown, processChapter };
 }
 
 function parseBookIndex(text: string) {

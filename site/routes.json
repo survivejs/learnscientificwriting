@@ -26,6 +26,9 @@
       "bookIndex": {
         "operation": "indexBook",
         "parameters": ["./book/chapters.tex", "./book/appendices.tex"]
+      },
+      "bibtex": {
+        "operation": "loadBibtex"
       }
     },
     "expand": {
