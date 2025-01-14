@@ -50,8 +50,9 @@ function init({ load }: DataSourcesApi) {
   // TODO: Attach prev/next info during indexing pass
   async function processChapter(
     // { path, previous, next }: {
-    { path }: {
+    { path, title }: {
       path: string;
+      title: string;
       // previous: MarkdownWithFrontmatter;
       // next: MarkdownWithFrontmatter;
     },
@@ -74,14 +75,15 @@ function init({ load }: DataSourcesApi) {
 
     return {
       data: {
-        title: "TODO",
+        title,
         author: {
-          name: "TODO",
-          twitter: "TODO",
+          name: "Juho Vepsäläinen",
+          twitter: "https://x.com/bebraw",
         },
       },
-      tableOfContents: [], // TODO
+      tableOfContents: [], // TODO: Generate based on AST
       content,
+      // TODO: Generate during indexing
       previous: "TODO",
       next: "TODO",
     };
