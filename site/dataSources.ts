@@ -64,12 +64,11 @@ function init({ load }: DataSourcesApi) {
     const bibtex = parseBibtexCollection(bibtexText);
 
     const chapterText = await load.textFile(path);
-    // TODO: Add cites to singles and connect it to bibtex
     const ast = parseLatex(chapterText, {
       blocks,
       doubles,
       lists,
-      singles,
+      singles: { ...singles, ...cites(bibtex) },
     });
     const content = astToHTMLSync(ast, htmlispToHTMLSync);
 
