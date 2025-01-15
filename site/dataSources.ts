@@ -64,6 +64,7 @@ function init({ load }: DataSourcesApi) {
       // next: MarkdownWithFrontmatter;
     },
   ) {
+    // TODO: Pass book index here as well since that's needed for label linking
     // TODO: Add proper nesting to gustwind to allow loading any data from a parent
     // const { bibtex } = this.parentDataSources;
     const bibtex = await loadBibtex();
@@ -109,6 +110,9 @@ function parseBookIndex(text: string) {
   const titles = ast.filter((n) => n.type === "title").map((n) =>
     n.children[0]
   );
+  const labels = ast.filter((n) => n.type === "label").map((n) =>
+    n.children[0]
+  );
   const slugs = ast.filter((n) => n.type === "slug").map((n) =>
     // @ts-expect-error This should be a string
     n.children[0].split("chapters/")[1].split("-").slice(1).join("-")
@@ -117,6 +121,7 @@ function parseBookIndex(text: string) {
 
   return titles.map((title, i) => ({
     title,
+    label: labels[i],
     slug: slugs[i],
     path: `book/${paths[i]}.tex`,
   }));
