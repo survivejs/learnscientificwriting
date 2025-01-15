@@ -1,7 +1,7 @@
-import { htmlispToHTMLSync } from "https://deno.land/x/gustwind@v0.80.1/htmlisp/htmlispToHTMLSync.ts";
-import { astToHTMLSync } from "https://deno.land/x/gustwind@v0.80.1/htmlisp/utilities/astToHTMLSync.ts";
-import { parseLatex } from "https://deno.land/x/gustwind@v0.80.1/htmlisp/parsers/latex/parseLatex.ts";
-import { parseBibtexCollection } from "https://deno.land/x/gustwind@v0.80.1/htmlisp/parsers/latex/parseBibtexCollection.ts";
+import { htmlispToHTMLSync } from "https://deno.land/x/gustwind@v0.80.2/htmlisp/htmlispToHTMLSync.ts";
+import { astToHTMLSync } from "https://deno.land/x/gustwind@v0.80.2/htmlisp/utilities/astToHTMLSync.ts";
+import { parseLatex } from "https://deno.land/x/gustwind@v0.80.2/htmlisp/parsers/latex/parseLatex.ts";
+import { parseBibtexCollection } from "https://deno.land/x/gustwind@v0.80.2/htmlisp/parsers/latex/parseBibtexCollection.ts";
 import {
   blocks,
   cites,
@@ -9,8 +9,8 @@ import {
   el,
   lists,
   singles,
-} from "https://deno.land/x/gustwind@v0.80.1/htmlisp/parsers/latex/defaultExpressions.ts";
-import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.80.1/types.ts";
+} from "https://deno.land/x/gustwind@v0.80.2/htmlisp/parsers/latex/defaultExpressions.ts";
+import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.80.2/types.ts";
 import getMarkdown from "./transforms/markdown.ts";
 
 function init({ load }: DataSourcesApi) {
@@ -64,8 +64,9 @@ function init({ load }: DataSourcesApi) {
       // next: MarkdownWithFrontmatter;
     },
   ) {
-    // @ts-expect-error This is fine
-    const { bibtex } = this.parentDataSources;
+    // TODO: Add proper nesting to gustwind to allow loading any data from a parent
+    // const { bibtex } = this.parentDataSources;
+    const bibtex = await loadBibtex();
 
     const chapterText = await load.textFile(path);
     const ast = parseLatex(chapterText, {
@@ -74,6 +75,7 @@ function init({ load }: DataSourcesApi) {
       lists,
       singles: { ...singles, ...cites(bibtex) },
     });
+
     const content = astToHTMLSync(ast, htmlispToHTMLSync);
 
     return {
