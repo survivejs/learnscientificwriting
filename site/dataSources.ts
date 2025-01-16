@@ -1,16 +1,17 @@
-import { htmlispToHTMLSync } from "https://deno.land/x/gustwind@v0.80.3/htmlisp/htmlispToHTMLSync.ts";
-import { astToHTMLSync } from "https://deno.land/x/gustwind@v0.80.3/htmlisp/utilities/astToHTMLSync.ts";
-import { parseLatex } from "https://deno.land/x/gustwind@v0.80.3/htmlisp/parsers/latex/parseLatex.ts";
-import { parseBibtexCollection } from "https://deno.land/x/gustwind@v0.80.3/htmlisp/parsers/latex/parseBibtexCollection.ts";
+import { htmlispToHTMLSync } from "https://deno.land/x/gustwind@v0.81.4/htmlisp/htmlispToHTMLSync.ts";
+import { astToHTMLSync } from "https://deno.land/x/gustwind@v0.81.4/htmlisp/utilities/astToHTMLSync.ts";
+import { parseLatex } from "https://deno.land/x/gustwind@v0.81.4/htmlisp/parsers/latex/parseLatex.ts";
+import { parseBibtexCollection } from "https://deno.land/x/gustwind@v0.81.4/htmlisp/parsers/latex/parseBibtexCollection.ts";
 import {
   blocks,
   cites,
   doubles,
   el,
   lists,
+  refs,
   singles,
-} from "https://deno.land/x/gustwind@v0.80.3/htmlisp/parsers/latex/defaultExpressions.ts";
-import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.80.3/types.ts";
+} from "https://deno.land/x/gustwind@v0.81.4/htmlisp/parsers/latex/defaultExpressions.ts";
+import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.81.4/types.ts";
 import getMarkdown from "./transforms/markdown.ts";
 
 function init({ load }: DataSourcesApi) {
@@ -64,6 +65,12 @@ function init({ load }: DataSourcesApi) {
       // next: MarkdownWithFrontmatter;
     },
   ) {
+    const bookIndex = await indexBook(
+      "./book/chapters.tex",
+      "./book/appendices.tex",
+      { flatten: true },
+    );
+
     // TODO: Pass book index here as well since that's needed for label linking
     // TODO: Add proper nesting to gustwind to allow loading any data from a parent
     // const { bibtex } = this.parentDataSources;
@@ -71,10 +78,19 @@ function init({ load }: DataSourcesApi) {
 
     const chapterText = await load.textFile(path);
     const ast = parseLatex(chapterText, {
-      blocks,
+      // TODO: Restore blocks (verbatim/quote) later
+      // blocks,
       doubles,
       lists,
-      singles: { ...singles, ...cites(bibtex) },
+      // TODO: Connect refs here
+      singles: {
+        ...singles,
+        ...cites(bibtex),
+        ...refs(
+          // @ts-expect-error This is fine for now
+          bookIndex,
+        ),
+      },
     });
 
     const content = astToHTMLSync(ast, htmlispToHTMLSync);
@@ -120,8 +136,8 @@ function parseBookIndex(text: string) {
   const paths = ast.filter((n) => n.type === "slug").map((n) => n.children[0]);
 
   return titles.map((title, i) => ({
-    title,
-    label: labels[i],
+    title: title as string,
+    label: labels[i] as string,
     slug: slugs[i],
     path: `book/${paths[i]}.tex`,
   }));
