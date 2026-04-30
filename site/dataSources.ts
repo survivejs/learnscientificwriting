@@ -11,8 +11,34 @@ import {
   refs,
   singles,
 } from "https://deno.land/x/gustwind@v0.81.4/htmlisp/parsers/latex/defaultExpressions.ts";
-import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.81.4/types.ts";
+import type { DataSourcesApi } from "gustwind";
 import getMarkdown from "./transforms/markdown.ts";
+
+const environments = {
+  ...blocks,
+  ...lists,
+  comment: {
+    container: () => ({ type: "", attributes: {}, children: [] }),
+    item: blocks.verbatim.item,
+  },
+  overbatim: blocks.verbatim,
+  table: {
+    container: (children: string[]) => ({
+      type: "pre",
+      attributes: {},
+      children,
+    }),
+    item: blocks.verbatim.item,
+  },
+  tabular: {
+    container: (children: string[]) => ({
+      type: "pre",
+      attributes: {},
+      children,
+    }),
+    item: blocks.verbatim.item,
+  },
+};
 
 function init({ load }: DataSourcesApi) {
   const markdown = getMarkdown(load);
@@ -53,7 +79,7 @@ function init({ load }: DataSourcesApi) {
       "book/chapters/bibliography/english.bib",
     );
 
-    return parseBibtexCollection(bibtexText);
+    return sanitizeBibtexEntries(parseBibtexCollection(bibtexText));
   }
 
   // TODO: Attach prev/next info during indexing pass
@@ -77,19 +103,24 @@ function init({ load }: DataSourcesApi) {
     const bibtex = await loadBibtex();
 
     const chapterText = await load.textFile(path);
+    let footnotes = 0;
     const ast = parseLatex(chapterText, {
-      // TODO: Restore blocks (verbatim/quote) later
-      // blocks,
+      blocks: environments,
       doubles,
-      lists,
       // TODO: Connect refs here
       singles: {
         ...singles,
         ...cites(bibtex),
-        ...refs(
-          // @ts-expect-error This is fine for now
-          bookIndex,
-        ),
+        footnote: (children: HtmlispChild[]) => {
+          footnotes++;
+
+          return {
+            type: "sup",
+            attributes: { title: escapeAttribute(childrenToText(children)) },
+            children: [footnotes.toString()],
+          };
+        },
+        ...getRefs(bookIndex),
       },
     });
 
@@ -114,8 +145,63 @@ function init({ load }: DataSourcesApi) {
   return { indexBook, loadBibtex, processMarkdown, processChapter };
 }
 
+function getRefs(refEntries: { title: string; label: string; slug: string }[]) {
+  return {
+    ...refs(refEntries),
+    nameref: (children: string[]) => {
+      const id = children[0];
+      const ref = refEntries.find(({ label }) => label === id);
+
+      return {
+        type: "a",
+        attributes: { href: ref?.slug || "#" },
+        children: [ref?.title || id],
+      };
+    },
+  };
+}
+
+function sanitizeBibtexEntries(
+  entries: Record<string, { fields?: Record<string, string> }>,
+) {
+  return Object.fromEntries(
+    Object.entries(entries).map(([key, entry]) => [
+      key,
+      {
+        ...entry,
+        fields: Object.fromEntries(
+          Object.entries(entry.fields || {}).map(([fieldKey, value]) => [
+            fieldKey,
+            value
+              .replace(/\{\\"([A-Za-z])\}/g, "$1")
+              .replace(/"/g, "&quot;"),
+          ]),
+        ),
+      },
+    ]),
+  );
+}
+
+type HtmlispChild = string | {
+  type: string;
+  attributes?: Record<string, string>;
+  children?: HtmlispChild[];
+};
+
+function childrenToText(children: HtmlispChild[]) {
+  return children.map((child) =>
+    typeof child === "string" ? child : childrenToText(child.children || [])
+  ).join("");
+}
+
+function escapeAttribute(value: string) {
+  return value.replace(/"/g, "&quot;");
+}
+
 function parseBookIndex(text: string) {
   const ast = parseLatex(text, {
+    blocks: environments,
+    doubles,
     singles: {
       chapter: el("title"),
       label: el("label"),

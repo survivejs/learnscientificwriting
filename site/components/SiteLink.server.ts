@@ -1,4 +1,4 @@
-import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.77.2/types.ts";
+import type { DataSourcesApi } from "gustwind";
 
 function init(o: DataSourcesApi) {
   function validateUrl(url: string) {

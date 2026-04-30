@@ -1,6 +1,5 @@
-import { tw } from "https://esm.sh/@twind/core@1.1.1";
-import { urlJoin as urlJoinFn } from "https://bundle.deno.dev/https://deno.land/x/url_join@1.0.0/mod.ts";
-import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.77.2/types.ts";
+import { tw } from "@twind/core";
+import type { DataSourcesApi } from "gustwind";
 
 function init(o: DataSourcesApi) {
   function getDate(d: string) {
@@ -45,7 +44,16 @@ function init(o: DataSourcesApi) {
       throw new Error("Failed to join url");
     }
 
-    return urlJoinFn(...parts);
+    return parts
+      .filter(Boolean)
+      .map((part, index) => {
+        if (index === 0) {
+          return part.replace(/\/+$/g, "");
+        }
+
+        return part.replace(/^\/+|\/+$/g, "");
+      })
+      .join("/");
   }
 
   return {

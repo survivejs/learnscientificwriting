@@ -1,13 +1,13 @@
-import { install, tw } from "https://esm.sh/@twind/core@1.1.1";
-import { marked } from "https://unpkg.com/marked@15.0.3/lib/marked.esm.js";
-import type { Renderer } from "https://unpkg.com/marked@15.0.3/lib/marked.d.ts";
-import highlight from "https://unpkg.com/@highlightjs/cdn-assets@11.10.0/es/core.min.js";
-import highlightBash from "https://unpkg.com/highlight.js@11.10.0/es/languages/bash";
-import highlightJS from "https://unpkg.com/highlight.js@11.10.0/es/languages/javascript";
-import highlightJSON from "https://unpkg.com/highlight.js@11.10.0/es/languages/json";
-import highlightTS from "https://unpkg.com/highlight.js@11.10.0/es/languages/typescript";
-import highlightYAML from "https://unpkg.com/highlight.js@11.10.0/es/languages/yaml";
-import type { DataSourcesApi } from "https://deno.land/x/gustwind@v0.79.0/types.ts";
+import { install, tw } from "@twind/core";
+import { marked } from "marked";
+import type { Renderer } from "marked";
+import highlight from "highlight.js/lib/core";
+import highlightBash from "highlight.js/lib/languages/bash";
+import highlightJS from "highlight.js/lib/languages/javascript";
+import highlightJSON from "highlight.js/lib/languages/json";
+import highlightTS from "highlight.js/lib/languages/typescript";
+import highlightYAML from "highlight.js/lib/languages/yaml";
+import type { DataSourcesApi } from "gustwind";
 import twindSetup from "../twindSetup.ts";
 
 highlight.registerLanguage("bash", highlightBash);

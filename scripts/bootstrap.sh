@@ -7,7 +7,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Fetch books repositories
 echo
 echo "Fetching book repository..."
-deno task fetch:book-repository
+npm run fetch:book-repository
 
 echo
 echo "Done!"

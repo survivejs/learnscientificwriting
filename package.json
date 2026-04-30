@@ -1,0 +1,24 @@
+{
+  "type": "module",
+  "scripts": {
+    "bootstrap": "scripts/bootstrap.sh",
+    "fetch:book-repository": "scripts/fetch-book.sh",
+    "build": "gustwind --build --output ./build",
+    "start": "gustwind --develop --port 3000",
+    "serve": "gustwind --serve --port 3000 --input ./build",
+    "validate": "gustwind --validate --input ./build"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@tailwindcss/typography": "0.5.15",
+    "@twind/core": "1.1.1",
+    "@twind/preset-autoprefix": "1.0.5",
+    "@twind/preset-tailwind": "1.1.1",
+    "@twind/preset-typography": "1.0.5",
+    "gustwind": "0.97.0",
+    "parse5": "7.2.1",
+    "vite": "7.1.12"
+  }
+}
