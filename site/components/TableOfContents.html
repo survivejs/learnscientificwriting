@@ -7,10 +7,10 @@
     <li>
       <a
         x-attr
-        class="hover:text-primary"
+        class="text-muted hover:text-black"
         &@class="(concat
           '[element.firstChild?.textContent.trim() === parent.closest?.firstChild?.textContent.trim() && `'
-          (tw underline)
+          (tw 'text-black underline')
           '`]')"
         &href="(concat # (get props slug))"
         &children="(get props raw)"

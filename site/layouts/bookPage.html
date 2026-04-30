@@ -23,7 +23,10 @@
     </div>
   </slot>
   <slot name="aside">
-    <div class="flex flex-col gap-8">
+    <div
+      class="flex flex-col gap-8"
+      &visibleIf="(get context document.hasTableOfContents)"
+    >
       <TableOfContents &toc="(get context document.tableOfContents)" />
     </div>
   </slot>

@@ -17,18 +17,37 @@ import getMarkdown from "./transforms/markdown.ts";
 const environments = {
   ...blocks,
   ...lists,
-  comment: {
-    container: () => ({ type: "", attributes: {}, children: [] }),
-    item: blocks.verbatim.item,
-  },
-  overbatim: blocks.verbatim,
-  table: {
+  verbatim: {
     container: (children: string[]) => ({
       type: "pre",
       attributes: {},
       children,
     }),
-    item: blocks.verbatim.item,
+    item: parseUntilEndEnvironment("verbatim"),
+  },
+  quote: {
+    container: (children: string[]) => ({
+      type: "blockquote",
+      attributes: {},
+      children,
+    }),
+    item: parseUntilEndEnvironment("quote"),
+  },
+  comment: {
+    container: () => ({ type: "", attributes: {}, children: [] }),
+    item: parseUntilEndEnvironment("comment"),
+  },
+  overbatim: {
+    container: (children: string[]) => ({
+      type: "pre",
+      attributes: {},
+      children,
+    }),
+    item: parseUntilEndEnvironment("overbatim"),
+  },
+  table: {
+    container: (children: string[]) => parseTable(children.join("")),
+    item: parseUntilEndEnvironment("table"),
   },
   tabular: {
     container: (children: string[]) => ({
@@ -39,6 +58,96 @@ const environments = {
     item: blocks.verbatim.item,
   },
 };
+
+function parseUntilEndEnvironment(environment: string) {
+  return (getCharacter: {
+    getIndex(): number;
+    rest(): string;
+    setIndex(value: number): void;
+  }) => {
+    const endMarker = `\\end{${environment}}`;
+    const rest = getCharacter.rest();
+    const endIndex = rest.indexOf(endMarker);
+
+    if (endIndex <= 0) {
+      throw new Error("No matching expression was found");
+    }
+
+    getCharacter.setIndex(getCharacter.getIndex() + endIndex);
+
+    return rest.slice(0, endIndex);
+  };
+}
+
+function parseTable(input: string) {
+  const caption = input.match(/\\caption\{([^}]*)\}/)?.[1];
+  const label = input.match(/\\label\{([^}]*)\}/)?.[1];
+  const tabular = input.match(
+    /\\begin\{tabular\}[^\n]*\n([\s\S]*?)\\end\{tabular\}/,
+  )?.[1];
+
+  if (!tabular) {
+    return {
+      type: "pre",
+      attributes: {},
+      children: [input],
+    };
+  }
+
+  const rows = tabular
+    .replace(/\\hline/g, "")
+    .split(/\\\\/)
+    .map((row) => row.trim())
+    .filter(Boolean)
+    .map((row) => row.split("&").map((cell) => cell.trim()));
+  const [headings = [], ...bodyRows] = rows;
+
+  return {
+    type: "figure",
+    attributes: label ? { id: slugify(label) } : {},
+    children: [
+      {
+        type: "table",
+        attributes: {},
+        children: [
+          {
+            type: "thead",
+            attributes: {},
+            children: [{
+              type: "tr",
+              attributes: {},
+              children: headings.map((heading) => ({
+                type: "th",
+                attributes: {},
+                children: [heading],
+              })),
+            }],
+          },
+          {
+            type: "tbody",
+            attributes: {},
+            children: bodyRows.map((row) => ({
+              type: "tr",
+              attributes: {},
+              children: row.map((cell) => ({
+                type: "td",
+                attributes: {},
+                children: [cell],
+              })),
+            })),
+          },
+        ],
+      },
+      ...(caption
+        ? [{
+          type: "figcaption",
+          attributes: {},
+          children: [caption],
+        }]
+        : []),
+    ],
+  };
+}
 
 function init({ load }: DataSourcesApi) {
   const markdown = getMarkdown(load);
@@ -102,7 +211,7 @@ function init({ load }: DataSourcesApi) {
 
     const chapterText = await load.textFile(path);
     let footnotes = 0;
-    const ast = parseLatex(chapterText, {
+    const parser = {
       blocks: environments,
       doubles,
       // TODO: Connect refs here
@@ -120,7 +229,9 @@ function init({ load }: DataSourcesApi) {
         },
         ...getRefs(bookIndex),
       },
-    });
+    };
+    const ast = parseLatex(chapterText, parser);
+    const tableOfContents = getTableOfContents(ast);
 
     const content = astToHTMLSync(ast, htmlispToHTMLSync);
 
@@ -132,7 +243,8 @@ function init({ load }: DataSourcesApi) {
           twitter: "https://x.com/bebraw",
         },
       },
-      tableOfContents: [], // TODO: Generate based on AST
+      tableOfContents,
+      hasTableOfContents: tableOfContents.length > 0,
       content,
       previous,
       next,
@@ -145,8 +257,26 @@ function init({ load }: DataSourcesApi) {
 function getRefs(refEntries: { title: string; label: string; slug: string }[]) {
   return {
     ...refs(refEntries),
-    nameref: (children: string[]) => {
-      const id = children[0];
+    autoref: (children: HtmlispChild[], matchCounts: Record<string, string[]>) => {
+      const id = childrenToText(children) || matchCounts.autoref?.at(-1) || "";
+      const ref = refEntries.find(({ label }) => label === id);
+
+      if (ref) {
+        return {
+          type: "a",
+          attributes: { href: ref.slug || "#" },
+          children: [ref.title],
+        };
+      }
+
+      return {
+        type: "a",
+        attributes: { href: `#${slugify(id)}` },
+        children: [getAutorefLabel(id) || id],
+      };
+    },
+    nameref: (children: HtmlispChild[]) => {
+      const id = childrenToText(children);
       const ref = refEntries.find(({ label }) => label === id);
 
       return {
@@ -156,6 +286,12 @@ function getRefs(refEntries: { title: string; label: string; slug: string }[]) {
       };
     },
   };
+}
+
+function getAutorefLabel(id: string) {
+  const [kind] = id.split(":");
+
+  return kind || id;
 }
 
 function getAdjacentEntries(
@@ -212,6 +348,41 @@ type HtmlispChild = string | {
   children?: HtmlispChild[];
 };
 
+function getTableOfContents(ast: HtmlispChild[]) {
+  const foundIds: Record<string, number> = {};
+
+  return ast.flatMap((node) => {
+    if (typeof node === "string" || !["h2", "h3"].includes(node.type)) {
+      return [];
+    }
+
+    const raw = childrenToText(node.children || []);
+    const slug = getUniqueSlug(raw, foundIds);
+
+    node.attributes = { ...node.attributes, id: slug };
+
+    return [{
+      slug,
+      level: Number(node.type.slice(1)),
+      raw,
+      text: raw,
+    }];
+  });
+}
+
+function getUniqueSlug(raw: string, foundIds: Record<string, number>) {
+  let slug = slugify(raw);
+
+  if (foundIds[slug]) {
+    foundIds[slug]++;
+    slug += `-${foundIds[slug]}`;
+  } else {
+    foundIds[slug] = 1;
+  }
+
+  return slug;
+}
+
 function childrenToText(children: HtmlispChild[]) {
   return children.map((child) =>
     typeof child === "string" ? child : childrenToText(child.children || [])
@@ -220,6 +391,13 @@ function childrenToText(children: HtmlispChild[]) {
 
 function escapeAttribute(value: string) {
   return value.replace(/"/g, "&quot;");
+}
+
+function slugify(idBase: string) {
+  return idBase
+    .toLowerCase()
+    .replace(/`/g, "")
+    .replace(/[^\w]+/g, "-");
 }
 
 function parseBookIndex(text: string) {
