@@ -263,6 +263,9 @@ function init({ load }: DataSourcesApi) {
     const bibtex = await loadBibtex();
 
     const chapterText = stripStandaloneLatexComments(await load.textFile(path));
+
+    validateLatexReferences(path, chapterText, bibtex, refIndex);
+
     let footnotes = 0;
     const parser = {
       blocks: environments,
@@ -478,7 +481,7 @@ function joinHtmlispChildren(
 
 function extractCitationIds(text: string) {
   const citations = stripLatexComments(text).matchAll(
-    /\\cite[A-Za-z]*(?:\s*\[[^\]]*\]){0,2}\s*\{([^}]*)\}/g,
+    /\\(?:cite[A-Za-z]*|fullcite)(?:\s*\[[^\]]*\]){0,2}\s*\{([^}]*)\}/g,
   );
 
   return Array.from(citations).flatMap((match) =>
@@ -487,6 +490,60 @@ function extractCitationIds(text: string) {
       .map((id) => id.trim())
       .filter(Boolean)
   );
+}
+
+function validateLatexReferences(
+  path: string,
+  text: string,
+  bibtex: Record<string, { fields?: Record<string, string> }>,
+  refIndex: { label: string }[],
+) {
+  const citationIds = extractCitationIds(text);
+  const labels = extractReferenceLabels(text);
+  const availableLabels = new Set(
+    refIndex.map(({ label }) => label).concat(extractDefinedLabels(text)),
+  );
+  const missingCitationIds = unique(
+    citationIds.filter((id) => !bibtex[id]),
+  );
+  const missingLabels = unique(
+    labels.filter((label) => !availableLabels.has(label)),
+  );
+
+  if (!missingCitationIds.length && !missingLabels.length) {
+    return;
+  }
+
+  const details = [
+    missingCitationIds.length
+      ? `missing citations: ${missingCitationIds.join(", ")}`
+      : "",
+    missingLabels.length ? `missing refs: ${missingLabels.join(", ")}` : "",
+  ].filter(Boolean);
+
+  throw new Error(`${path}: ${details.join("; ")}`);
+}
+
+function extractReferenceLabels(text: string) {
+  const references = stripLatexComments(text).matchAll(
+    /\\(?:auto|name)?ref\s*\{([^}]*)\}/g,
+  );
+
+  return Array.from(references)
+    .map((match) => match[1].trim())
+    .filter(Boolean);
+}
+
+function extractDefinedLabels(text: string) {
+  const labels = stripLatexComments(text).matchAll(/\\label\s*\{([^}]*)\}/g);
+
+  return Array.from(labels)
+    .map((match) => match[1].trim())
+    .filter(Boolean);
+}
+
+function unique<T>(values: T[]) {
+  return Array.from(new Set(values));
 }
 
 function stripLatexComments(text: string) {
