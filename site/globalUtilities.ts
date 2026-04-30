@@ -1,4 +1,3 @@
-import { tw } from "@twind/core";
 import type { DataSourcesApi } from "gustwind";
 
 function init(o: DataSourcesApi) {
@@ -64,7 +63,6 @@ function init(o: DataSourcesApi) {
     getFullDate,
     length,
     urlJoin,
-    tw,
   };
 }
 

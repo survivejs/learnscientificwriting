@@ -12,10 +12,7 @@
       <a
         x-attr
         class="block border-l-2 border-transparent py-1 pl-3 leading-snug text-muted hover:border-slate-400 hover:text-slate-950"
-        &@class="(concat
-          '[element.firstChild?.textContent.trim() === parent.closest?.firstChild?.textContent.trim() && `'
-          (tw 'border-muted text-slate-950 font-medium')
-          '`]')"
+        @class="[element.firstChild?.textContent.trim() === parent.closest?.firstChild?.textContent.trim() && `border-muted text-slate-950 font-medium`]"
         &href="(concat # (get props slug))"
         &children="(get props raw)"
       ></a>

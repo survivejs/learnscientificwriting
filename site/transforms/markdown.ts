@@ -1,4 +1,3 @@
-import { install, tw } from "@twind/core";
 import { marked } from "marked";
 import type { Renderer } from "marked";
 import highlight from "highlight.js/lib/core";
@@ -8,7 +7,6 @@ import highlightJSON from "highlight.js/lib/languages/json";
 import highlightTS from "highlight.js/lib/languages/typescript";
 import highlightYAML from "highlight.js/lib/languages/yaml";
 import type { DataSourcesApi } from "gustwind";
-import twindSetup from "../twindSetup.ts";
 
 highlight.registerLanguage("bash", highlightBash);
 highlight.registerLanguage("javascript", highlightJS);
@@ -34,9 +32,6 @@ marked.setOptions({
     }
   },
 });
-
-// @ts-expect-error This is fine
-install(twindSetup);
 
 function getTransformMarkdown(load: DataSourcesApi["load"]) {
   return function transformMarkdown(input: string) {
@@ -72,7 +67,7 @@ function getTransformMarkdown(load: DataSourcesApi["load"]) {
         }
 
         return '<pre class="' +
-          tw("overflow-auto -mx-4 md:mx-0") +
+          "overflow-auto -mx-4 md:mx-0" +
           '"><code class="' +
           // @ts-ignore How to type this?
           (this.options.langPrefix || "") +
@@ -91,7 +86,7 @@ function getTransformMarkdown(load: DataSourcesApi["load"]) {
 
         return '<a href="#' + slug + '"><h' +
           level +
-          ' class="' + tw("inline") + '"' +
+          ' class="inline"' +
           ' id="' +
           slug +
           '">' +
@@ -108,9 +103,7 @@ function getTransformMarkdown(load: DataSourcesApi["load"]) {
         const height = textParts[2] || "";
         const className = textParts[3] || "";
 
-        return `<img src="${href}" alt="${alt}" title="${title || ""}" class="${
-          tw(className)
-        }" width="${width}" height="${height}" />`;
+        return `<img src="${href}" alt="${alt}" title="${title || ""}" class="${className}" width="${width}" height="${height}" />`;
       },
       link({ href, title, tokens }) {
         // @ts-expect-error Parser will exist
@@ -132,7 +125,7 @@ function getTransformMarkdown(load: DataSourcesApi["load"]) {
           });
         }
 
-        let out = '<a class="' + tw("underline") + '" href="' + href + '"';
+        let out = '<a class="underline" href="' + href + '"';
         if (title) {
           out += ' title="' + title + '"';
         }
@@ -154,7 +147,7 @@ function getTransformMarkdown(load: DataSourcesApi["load"]) {
           klass = ordered
             ? "list-decimal list-inside"
             : "list-disc list-inside";
-        return "<" + type + startatt + ' class="' + tw(klass) + '">\n' +
+        return "<" + type + startatt + ' class="' + klass + '">\n' +
           body +
           "</" +
           type + ">\n";
