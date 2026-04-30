@@ -2,6 +2,7 @@ import typography from "@tailwindcss/typography";
 import meta from "./meta.json" with { type: "json" };
 
 export default {
+  darkMode: "selector",
   content: ["./site/**/*.{html,ts}", "./book/**/*.{md,tex}"],
   theme: {
     extend: {

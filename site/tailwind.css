@@ -17,31 +17,27 @@
     color: #111827;
   }
 
-  @media (prefers-color-scheme: dark) {
-    body {
-      background-color: #15130f;
-      background-image:
-        linear-gradient(rgba(217, 205, 184, 0.055) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(217, 205, 184, 0.04) 1px, transparent 1px);
-      color-scheme: dark;
-    }
+  .dark body {
+    background-color: #15130f;
+    background-image:
+      linear-gradient(rgba(217, 205, 184, 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(217, 205, 184, 0.04) 1px, transparent 1px);
+    color-scheme: dark;
+  }
 
-    ::selection {
-      background: #b46b30;
-      color: #fffaf0;
-    }
+  .dark ::selection {
+    background: #b46b30;
+    color: #fffaf0;
   }
 }
 
 @layer utilities {
-  @media (prefers-color-scheme: dark) {
-    .pagefind-ui {
-      --pagefind-ui-primary: #f7ead0;
-      --pagefind-ui-text: #f5ead8;
-      --pagefind-ui-background: #201c16;
-      --pagefind-ui-border: rgba(217, 205, 184, 0.22);
-      --pagefind-ui-tag: #15130f;
-    }
+  .dark .pagefind-ui {
+    --pagefind-ui-primary: #f7ead0;
+    --pagefind-ui-text: #f5ead8;
+    --pagefind-ui-background: #201c16;
+    --pagefind-ui-border: rgba(217, 205, 184, 0.22);
+    --pagefind-ui-tag: #15130f;
   }
 }
 
@@ -52,9 +48,16 @@
     box-shadow: inset 4px 0 0 #b46b30;
   }
 
-  @media (prefers-color-scheme: dark) {
-    .reference-entry:target {
-      background: rgba(180, 107, 48, 0.16);
-    }
+  .dark .reference-entry:target {
+    background: rgba(180, 107, 48, 0.16);
+  }
+
+  .theme-toggle__icon {
+    display: none;
+  }
+
+  :root:not(.dark) .theme-toggle__icon--moon,
+  .dark .theme-toggle__icon--sun {
+    display: inline-flex;
   }
 }

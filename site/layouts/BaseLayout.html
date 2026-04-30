@@ -17,6 +17,27 @@
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/highlightjs/highlight.js@11.10.0/src/styles/github-dark.min.css"
     /></noscript>
+    <script>
+      (() => {
+        const root = document.documentElement;
+        const media = window.matchMedia("(prefers-color-scheme: dark)");
+        let theme;
+
+        try {
+          const stored = window.localStorage.getItem("learn-scientific-writing-theme");
+          if (stored === "dark" || stored === "light") {
+            theme = stored;
+          }
+        } catch {
+          // Ignore blocked storage and fall back to the system preference.
+        }
+
+        theme ||= media.matches ? "dark" : "light";
+        root.classList.toggle("dark", theme === "dark");
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme;
+      })();
+    </script>
     <style>
       @view-transition {
         navigation: auto;

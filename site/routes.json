@@ -14,7 +14,8 @@
         "operation": "indexBook",
         "parameters": ["./book/chapters.tex", "./book/appendices.tex"]
       }
-    }
+    },
+    "scripts": [{ "name": "theme-toggle" }]
   },
   "book": {
     "layout": "bookIndex",
@@ -35,6 +36,7 @@
         "operation": "loadBibtex"
       }
     },
+    "scripts": [{ "name": "theme-toggle" }],
     "routes": {
       "references": {
         "layout": "bookReferences",

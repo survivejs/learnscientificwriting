@@ -1,0 +1,48 @@
+<button
+  type="button"
+  &class="(concat
+    'theme-toggle inline-flex h-7 w-7 items-center justify-center rounded-full border border-primary/30 text-primary/80 transition hover:border-warning hover:text-white'
+    ' '
+    (get props class)
+  )"
+  data-theme-toggle
+  aria-label="Toggle dark mode"
+  aria-pressed="false"
+  title="Toggle dark mode"
+>
+  <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.75"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="h-4 w-4"
+    >
+      <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path>
+    </svg>
+  </span>
+  <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.75"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="h-4 w-4"
+    >
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2.5"></path>
+      <path d="M12 19.5V22"></path>
+      <path d="M4.93 4.93l1.77 1.77"></path>
+      <path d="M17.3 17.3l1.77 1.77"></path>
+      <path d="M2 12h2.5"></path>
+      <path d="M19.5 12H22"></path>
+      <path d="M4.93 19.07l1.77-1.77"></path>
+      <path d="M17.3 6.7l1.77-1.77"></path>
+    </svg>
+  </span>
+  <span class="sr-only" data-theme-label>Toggle dark mode</span>
+</button>
