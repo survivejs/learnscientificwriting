@@ -295,6 +295,10 @@ function init({ load }: DataSourcesApi) {
         title: currentEntry?.title || title,
         description:
           "A chapter from The Process of Scientific Writing, an open guide to clear research articles.",
+        ogDescription: "An open guide to clear research articles.",
+        ogEyebrow: /^[A-Z]\.\s/.test(currentEntry?.title || title)
+          ? "APPENDIX"
+          : "THE PROCESS OF SCIENTIFIC WRITING",
         author: {
           name: "Juho Vepsäläinen",
           site: "https://survivejs.com",

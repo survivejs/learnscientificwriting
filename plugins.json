@@ -52,7 +52,10 @@
       "path": "./node_modules/gustwind/plugins/pagefind/mod.js"
     },
     {
-      "path": "./site/plugins/og/mod.js"
+      "path": "./node_modules/gustwind/plugins/og/mod.js",
+      "options": {
+        "layout": "./site/layouts/og.html"
+      }
     },
     {
       "path": "./node_modules/gustwind/plugins/sitemap/mod.js"

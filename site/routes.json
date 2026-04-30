@@ -4,6 +4,8 @@
     "context": {
       "meta": {
         "title": "Learn scientific writing",
+        "ogEyebrow": "LEARN SCIENTIFIC WRITING",
+        "ogDescription": "A practical open book about writing clear research articles.",
         "description": "Scientific writing is an art of its own. This site will help you to get started."
       }
     },
@@ -19,6 +21,8 @@
     "context": {
       "meta": {
         "title": "The Process of Scientific Writing",
+        "ogEyebrow": "LEARN SCIENTIFIC WRITING",
+        "ogDescription": "A practical table of contents for the open book.",
         "description": "Table of contents for the book"
       }
     },
@@ -37,6 +41,8 @@
         "context": {
           "meta": {
             "title": "References",
+            "ogEyebrow": "THE PROCESS OF SCIENTIFIC WRITING",
+            "ogDescription": "Works cited throughout the open book.",
             "description": "Works cited in The Process of Scientific Writing"
           }
         },
@@ -75,6 +81,14 @@
           "description": {
             "utility": "get",
             "parameters": ["context", "document.data.description"]
+          },
+          "ogEyebrow": {
+            "utility": "get",
+            "parameters": ["context", "document.data.ogEyebrow"]
+          },
+          "ogDescription": {
+            "utility": "get",
+            "parameters": ["context", "document.data.ogDescription"]
           }
         }
       }
