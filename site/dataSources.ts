@@ -577,6 +577,9 @@ function formatReference(
   const source = formatReferenceSource(fields);
   const doi = cleanBibtexValue(fields.doi || "");
   const url = cleanBibtexUrl(fields.url || fields.howpublished || "");
+  const citation = [authors, `(${year}).`, `${title}.`, source]
+    .filter(Boolean)
+    .join(" ");
 
   return {
     id,
@@ -584,6 +587,7 @@ function formatReference(
     year,
     title,
     source,
+    citation,
     doi,
     doiUrl: doi ? `https://doi.org/${doi}` : "",
     url,

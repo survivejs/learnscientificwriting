@@ -46,6 +46,15 @@
                 >key:
                 <span &children="(get props id)" />
               </span>
+              <button
+                class="rounded-sm border border-muted/20 bg-white/60 px-2 py-1 uppercase tracking-wide transition hover:border-warning hover:text-slate-950"
+                type="button"
+                onclick="navigator.clipboard?.writeText(this.dataset.copy || '')"
+                &data-copy="(get props citation)"
+                aria-label="Copy citation"
+              >
+                Copy citation
+              </button>
               <a
                 &visibleIf="(get props doi)"
                 class="underline decoration-muted underline-offset-4 hover:text-slate-950"
