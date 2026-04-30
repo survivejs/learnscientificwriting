@@ -2,14 +2,14 @@
 
 ## `\-` should parse as a discretionary hyphen, not an unknown command
 
-Patch: `patches/gustwind-upstream-discretionary-hyphen.patch`
+Status: Partially landed in Gustwind 0.105.0.
 
 LaTeX uses `\-` to mark an optional hyphenation point. In prose, it should not
 emit a literal hyphen or stop parsing the current content run.
 
-The local workaround currently strips `\-` before calling Gustwind's LaTeX
-parser. This behavior belongs in the parser instead so consumers do not have to
-pre-normalize otherwise valid LaTeX source.
+Gustwind 0.105.0 handles this in regular content parsing. The local workaround
+still strips `\-` before parsing because link text arguments such as
+`\href{...}{Research\-Gate}` still leak the marker into rendered text.
 
 Example:
 

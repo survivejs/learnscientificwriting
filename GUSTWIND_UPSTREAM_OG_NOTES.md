@@ -2,7 +2,7 @@
 
 ## Make generated OG asset paths configurable and URL-safe
 
-Patch: `patches/gustwind-upstream-og-plugin-options.patch`
+Status: Landed in Gustwind 0.105.0.
 
 The layout-based OG plugin works well for replacing site-specific OG generators.
 The remaining upstream polish is mostly around making it reusable across sites:
@@ -29,14 +29,10 @@ Example plugin configuration:
 
 ## Render OG layouts with the same utilities as normal pages
 
-Patch: `patches/gustwind-upstream-og-render-context.patch`
+Status: Landed in Gustwind 0.105.0.
 
-The OG plugin currently asks `htmlisp-renderer-plugin` only for components.
-That is enough for plain SVG templates, but it means OG layouts cannot use the
-same global utilities or component utilities available to normal page layouts.
-
-The patch exposes a `getRenderContext` message from the HTMLisp renderer plugin.
-The OG plugin can then render its layout with:
+The OG plugin now asks the HTMLisp renderer for a shared render context. OG
+layouts can render with:
 
 - `components`
 - route-aware `componentUtilities`
