@@ -1,11 +1,11 @@
 {
   "type": "module",
   "scripts": {
-    "bootstrap": "scripts/bootstrap.sh",
-    "fetch:book-repository": "scripts/fetch-book.sh",
+    "bootstrap": "bash scripts/bootstrap.sh",
+    "fetch:book-repository": "bash scripts/fetch-book.sh",
     "build": "gustwind --build --output ./build --no-incremental",
     "worker:prepare": "node scripts/generate-worker-manifest.mjs",
-    "worker:build": "npm run build && npm run worker:prepare",
+    "worker:build": "npm run bootstrap && npm run build && npm run worker:prepare",
     "worker:dev": "npm run worker:build && wrangler dev",
     "deploy": "npm run worker:build && wrangler deploy",
     "start": "gustwind --develop --port 3000",
