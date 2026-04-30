@@ -1,0 +1,67 @@
+<BaseLayout>
+  <slot name="content">
+    <div
+      class="md:mx-auto p-4 md:px-0 md:py-10 w-full md:max-w-3xl flex flex-col gap-10"
+    >
+      <article class="flex flex-col gap-8 border-t-4 border-secondary pt-8">
+        <header class="flex flex-col gap-4">
+          <Heading
+            level="1"
+            class="font-serif font-bold text-4xl md:text-6xl leading-tight tracking-normal"
+          >
+            References
+          </Heading>
+          <p class="max-w-2xl font-serif text-lg leading-8 text-muted">
+            Works cited in
+            <em>The Process of Scientific Writing</em>.
+          </p>
+        </header>
+
+        <ol
+          class="not-prose flex flex-col gap-5 font-serif"
+          &foreach="(get context references)"
+        >
+          <li
+            &id="(get props id)"
+            class="reference-entry scroll-mt-24 border-l-4 border-muted/20 px-4 py-3 transition"
+          >
+            <p class="text-lg leading-8 text-slate-900">
+              <span &children="(get props authors)" />
+              <span> (</span>
+              <span &children="(get props year)" />
+              <span>).</span>
+              <span class="font-semibold" &children="(get props title)" />
+              <span>.</span>
+            </p>
+            <p
+              class="mt-1 text-base leading-7 text-muted"
+              &visibleIf="(get props source)"
+              &children="(get props source)"
+            ></p>
+            <div
+              class="mt-3 flex flex-wrap items-center gap-3 text-xs font-sans uppercase tracking-wide text-muted"
+            >
+              <span
+                class="rounded-sm border border-muted/20 bg-white/60 px-2 py-1 normal-case tracking-normal"
+                >key:
+                <span &children="(get props id)" />
+              </span>
+              <a
+                &visibleIf="(get props doi)"
+                class="underline decoration-muted underline-offset-4 hover:text-slate-950"
+                &href="(get props doiUrl)"
+                >DOI</a
+              >
+              <a
+                &visibleIf="(get props url)"
+                class="underline decoration-muted underline-offset-4 hover:text-slate-950"
+                &href="(get props url)"
+                >URL</a
+              >
+            </div>
+          </li>
+        </ol>
+      </article>
+    </div>
+  </slot>
+</BaseLayout>

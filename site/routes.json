@@ -31,6 +31,22 @@
         "operation": "loadBibtex"
       }
     },
+    "routes": {
+      "references": {
+        "layout": "bookReferences",
+        "context": {
+          "meta": {
+            "title": "References",
+            "description": "Works cited in The Process of Scientific Writing"
+          }
+        },
+        "dataSources": {
+          "references": {
+            "operation": "formatReferences"
+          }
+        }
+      }
+    },
     "expand": {
       "matchBy": {
         "name": "chapters",

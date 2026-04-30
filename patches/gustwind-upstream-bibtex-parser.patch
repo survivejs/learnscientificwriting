@@ -1,0 +1,401 @@
+diff --git a/htmlisp/parsers/latex/parsers/bibtex.ts b/htmlisp/parsers/latex/parsers/bibtex.ts
+index 0000000..0000000 100644
+--- a/htmlisp/parsers/latex/parsers/bibtex.ts
++++ b/htmlisp/parsers/latex/parsers/bibtex.ts
+@@ -1,87 +1,153 @@
+-const STATES = {
+-  IDLE: "IDLE",
+-  PARSE_TYPE: "PARSE_TYPE",
+-  PARSE_ID: "PARSE_ID",
+-  PARSE_KEY: "PARSE_KEY",
+-  PARSE_VALUE: "PARSE_VALUE",
+-} as const;
+-
+ const LIMIT = 100000;
+ 
+ export function parseBibtex(getCharacter: {
++  get(): string | null;
+   next(): string | null;
++  setIndex(value: number): void;
++  getIndex(): number;
+ }) {
+-  let state = STATES.IDLE;
+-  let stringBuffer = "";
+-  let type = "";
+-  let id = "";
+-  let key = "";
+-  let bracesFound = 0;
+-  const fields: Record<string, string> = {};
++  const startIndex = getCharacter.getIndex();
++
++  if (getCharacter.next() !== "@") {
++    getCharacter.setIndex(startIndex);
++    throw new Error("No matching expression was found");
++  }
++
++  const type = readWhile(getCharacter, (c) => /[A-Za-z]/.test(c)).trim();
++
++  skipWhitespace(getCharacter);
+ 
+-  for (let i = 0; i < LIMIT; i++) {
+-    const c = getCharacter.next();
+-    if (c === null) {
+-      break;
+-    }
++  if (getCharacter.next() !== "{") {
++    getCharacter.setIndex(startIndex);
++    throw new Error("No matching expression was found");
++  }
+ 
+-    if (state === STATES.IDLE) {
+-      if (i === 0 && c !== "@") {
+-        throw new Error("No matching expression was found");
+-      }
+-      state = STATES.PARSE_TYPE;
++  const id = readUntil(getCharacter, [",", "}"]).trim();
++
++  if (!type || !id) {
++    getCharacter.setIndex(startIndex);
++    throw new Error("No matching expression was found");
++  }
++
++  const fields: Record<string, string> = {};
++  let current = getCharacter.get();
++
++  if (current === "}") {
++    getCharacter.next();
++    return { type, id, fields };
++  }
++
++  while (current !== null) {
++    skipWhitespaceAndCommas(getCharacter);
++    current = getCharacter.get();
++
++    if (current === "}") {
++      getCharacter.next();
++      break;
+     }
+ 
+-    if (state === STATES.PARSE_TYPE) {
+-      if (c === "{") {
+-        type = stringBuffer.trim();
+-        stringBuffer = "";
+-        state = STATES.PARSE_ID;
+-      } else if (c !== "@") {
+-        stringBuffer += c;
+-      }
++    const key = readWhile(getCharacter, (c) => /[A-Za-z0-9_-]/.test(c)).trim();
++
++    skipWhitespace(getCharacter);
++
++    if (!key || getCharacter.next() !== "=") {
++      throw new Error("No matching expression was found");
+     }
+ 
+-    if (state === STATES.PARSE_ID) {
+-      if (c === "," || c === "}") {
+-        id = stringBuffer.trim();
+-        stringBuffer = "";
+-        state = STATES.PARSE_KEY;
+-      } else if (c !== "{") {
+-        stringBuffer += c;
+-      }
++    skipWhitespace(getCharacter);
++
++    fields[key] = readBibtexValue(getCharacter).trim();
++    current = getCharacter.get();
++  }
++
++  return { type, id, fields };
++}
++
++function readBibtexValue(getCharacter: {
++  get(): string | null;
++  next(): string | null;
++}) {
++  const first = getCharacter.get();
++
++  if (first === "{") {
++    return readBalancedValue(getCharacter);
++  }
++
++  if (first === '"') {
++    return readQuotedValue(getCharacter);
++  }
++
++  return readUntil(getCharacter, [",", "}"]).trim();
++}
++
++function readBalancedValue(getCharacter: {
++  next(): string | null;
++}) {
++  let depth = 0;
++  let value = "";
++
++  for (let i = 0; i < LIMIT; i++) {
++    const c = getCharacter.next();
++
++    if (c === null) {
++      break;
+     }
+ 
+-    if (state === STATES.PARSE_KEY) {
+-      if (c === "}") {
++    if (c === "{") {
++      if (depth > 0) {
++        value += c;
++      }
++      depth++;
++    } else if (c === "}") {
++      depth--;
++      if (depth === 0) {
+         break;
+-      } else if (c === "=") {
+-        key = stringBuffer.trim();
+-        stringBuffer = "";
+-        bracesFound = 0;
+-        state = STATES.PARSE_VALUE;
+-      } else if (c !== ",") {
+-        stringBuffer += c;
+       }
++      value += c;
++    } else {
++      value += c;
+     }
++  }
+ 
+-    if (state === STATES.PARSE_VALUE) {
+-      if (c === "{") {
+-        if (bracesFound > 0) {
+-          stringBuffer += c;
+-        }
+-        bracesFound++;
+-      } else if (c === "}") {
+-        bracesFound--;
+-        if (bracesFound === 0) {
+-          fields[key] = stringBuffer.trim();
+-          stringBuffer = "";
+-          state = STATES.PARSE_KEY;
+-        } else {
+-          stringBuffer += c;
+-        }
+-      } else if (c !== "=" && c !== "{") {
+-        stringBuffer += c;
+-      }
++  return value;
++}
++
++function readQuotedValue(getCharacter: {
++  next(): string | null;
++}) {
++  let value = "";
++
++  // Consume the opening quote.
++  getCharacter.next();
++
++  for (let i = 0; i < LIMIT; i++) {
++    const c = getCharacter.next();
++
++    if (c === null) {
++      break;
+     }
+-  }
+ 
+-  if (!type) {
+-    throw new Error("No matching expression was found");
++    if (c === '"') {
++      break;
++    }
++
++    value += c;
+   }
+ 
+-  return { type, id, fields };
++  return value;
++}
++
++function skipWhitespace(getCharacter: {
++  get(): string | null;
++  next(): string | null;
++}) {
++  readWhile(getCharacter, (c) => /\s/.test(c));
++}
++
++function skipWhitespaceAndCommas(getCharacter: {
++  get(): string | null;
++  next(): string | null;
++}) {
++  readWhile(getCharacter, (c) => /[\s,]/.test(c));
++}
++
++function readUntil(getCharacter: {
++  get(): string | null;
++  next(): string | null;
++}, endCharacters: string[]) {
++  return readWhile(getCharacter, (c) => !endCharacters.includes(c));
++}
++
++function readWhile(getCharacter: {
++  get(): string | null;
++  next(): string | null;
++}, predicate: (c: string) => boolean) {
++  let value = "";
++
++  for (let i = 0; i < LIMIT; i++) {
++    const c = getCharacter.get();
++
++    if (c === null || !predicate(c)) {
++      break;
++    }
++
++    value += getCharacter.next();
++  }
++
++  return value;
+ }
+diff --git a/htmlisp/parsers/latex/parseBibtexCollection.ts b/htmlisp/parsers/latex/parseBibtexCollection.ts
+index 0000000..0000000 100644
+--- a/htmlisp/parsers/latex/parseBibtexCollection.ts
++++ b/htmlisp/parsers/latex/parseBibtexCollection.ts
+@@ -18,14 +18,9 @@ export function parseBibtexCollection(input: string) {
+     if (parseResult?.match) {
+       if (parseResult.value?.type) {
+         parseResult.value.type = parseResult.value.type.toUpperCase();
+-      }
+-
+-      if (parseResult.value?.fields?.author) {
+-        parseResult.value.fields.author = parseResult.value.fields.author
+-          .replaceAll('{\\"a}', "ä")
+-          .replaceAll('{\\"o}', "ö")
+-          .replaceAll('{\\"u}', "ü");
+-      }
++      }
++
++      parseResult.value.fields = normalizeBibtexFields(parseResult.value.fields);
+ 
+       if (parseResult.value?.fields?.title) {
+         parseResult.value.fields.title = parseResult.value.fields.title
+@@ -43,3 +38,128 @@ export function parseBibtexCollection(input: string) {
+ 
+   return ret;
+ }
++
++function normalizeBibtexFields(fields: Record<string, string> = {}) {
++  return Object.fromEntries(
++    Object.entries(fields).map(([key, value]) => [
++      key,
++      decodeLatexAccents(value),
++    ]),
++  );
++}
++
++function decodeLatexAccents(value: string) {
++  return value
++    .replace(/\{\\"([A-Za-z])\}/g, (_, letter: string) =>
++      decodeLatexAccent('"', letter)
++    )
++    .replace(/\\"([A-Za-z])/g, (_, letter: string) =>
++      decodeLatexAccent('"', letter)
++    )
++    .replace(/\{\\'([A-Za-z])\}/g, (_, letter: string) =>
++      decodeLatexAccent("'", letter)
++    )
++    .replace(/\\'([A-Za-z])/g, (_, letter: string) =>
++      decodeLatexAccent("'", letter)
++    )
++    .replace(/\{\\`([A-Za-z])\}/g, (_, letter: string) =>
++      decodeLatexAccent("`", letter)
++    )
++    .replace(/\\`([A-Za-z])/g, (_, letter: string) =>
++      decodeLatexAccent("`", letter)
++    )
++    .replace(/\{\\\^([A-Za-z])\}/g, (_, letter: string) =>
++      decodeLatexAccent("^", letter)
++    )
++    .replace(/\\\^([A-Za-z])/g, (_, letter: string) =>
++      decodeLatexAccent("^", letter)
++    )
++    .replace(/\{\\~([A-Za-z])\}/g, (_, letter: string) =>
++      decodeLatexAccent("~", letter)
++    )
++    .replace(/\\~([A-Za-z])/g, (_, letter: string) =>
++      decodeLatexAccent("~", letter)
++    )
++    .replace(/\{\\c\{([A-Za-z])\}\}/g, (_, letter: string) =>
++      decodeLatexAccent("c", letter)
++    )
++    .replace(/\\c\{([A-Za-z])\}/g, (_, letter: string) =>
++      decodeLatexAccent("c", letter)
++    );
++}
++
++function decodeLatexAccent(accent: string, letter: string) {
++  const accents: Record<string, Record<string, string>> = {
++    '"': {
++      A: "Ä",
++      E: "Ë",
++      I: "Ï",
++      O: "Ö",
++      U: "Ü",
++      Y: "Ÿ",
++      a: "ä",
++      e: "ë",
++      i: "ï",
++      o: "ö",
++      u: "ü",
++      y: "ÿ",
++    },
++    "'": {
++      A: "Á",
++      E: "É",
++      I: "Í",
++      O: "Ó",
++      U: "Ú",
++      Y: "Ý",
++      a: "á",
++      e: "é",
++      i: "í",
++      o: "ó",
++      u: "ú",
++      y: "ý",
++    },
++    "`": {
++      A: "À",
++      E: "È",
++      I: "Ì",
++      O: "Ò",
++      U: "Ù",
++      a: "à",
++      e: "è",
++      i: "ì",
++      o: "ò",
++      u: "ù",
++    },
++    "^": {
++      A: "Â",
++      E: "Ê",
++      I: "Î",
++      O: "Ô",
++      U: "Û",
++      a: "â",
++      e: "ê",
++      i: "î",
++      o: "ô",
++      u: "û",
++    },
++    "~": {
++      A: "Ã",
++      N: "Ñ",
++      O: "Õ",
++      a: "ã",
++      n: "ñ",
++      o: "õ",
++    },
++    c: {
++      C: "Ç",
++      c: "ç",
++    },
++  };
++
++  return accents[accent]?.[letter] || letter;
++}

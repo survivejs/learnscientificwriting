@@ -16,3 +16,11 @@
     color: #111827;
   }
 }
+
+@layer components {
+  .reference-entry:target {
+    border-color: #b46b30;
+    background: rgba(245, 234, 216, 0.78);
+    box-shadow: inset 4px 0 0 #b46b30;
+  }
+}
