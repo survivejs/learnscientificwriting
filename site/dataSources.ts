@@ -1,16 +1,16 @@
-import { htmlispToHTMLSync } from "https://deno.land/x/gustwind@v0.81.4/htmlisp/htmlispToHTMLSync.ts";
-import { astToHTMLSync } from "https://deno.land/x/gustwind@v0.81.4/htmlisp/utilities/astToHTMLSync.ts";
-import { parseLatex } from "https://deno.land/x/gustwind@v0.81.4/htmlisp/parsers/latex/parseLatex.ts";
-import { parseBibtexCollection } from "https://deno.land/x/gustwind@v0.81.4/htmlisp/parsers/latex/parseBibtexCollection.ts";
 import {
+  astToHTMLSync,
   blocks,
   cites,
   doubles,
   el,
+  htmlispToHTMLSync,
   lists,
+  parseBibtexCollection,
+  parseLatex,
   refs,
   singles,
-} from "https://deno.land/x/gustwind@v0.81.4/htmlisp/parsers/latex/defaultExpressions.ts";
+} from "gustwind/htmlisp";
 import type { DataSourcesApi } from "gustwind";
 import getMarkdown from "./transforms/markdown.ts";
 
