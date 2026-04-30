@@ -2,3 +2,5 @@ build/
 book/
 node_modules/
 .gustwind/
+.wrangler/
+worker/generated/site-manifest.js
