@@ -19,6 +19,8 @@
   property="og:image"
   &content="(urlJoin (get context meta.url) (trim (get context url) /) og.png)"
 />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:site" &content="(get context meta.siteName)" />
@@ -26,6 +28,10 @@
 <meta
   property="twitter:description"
   &content="(get context meta.description)"
+/>
+<meta
+  property="twitter:image"
+  &content="(urlJoin (get context meta.url) (trim (get context url) /) og.png)"
 />
 
 <title &children="(get context meta.title)"></title>

@@ -293,6 +293,8 @@ function init({ load }: DataSourcesApi) {
     return {
       data: {
         title: currentEntry?.title || title,
+        description:
+          "A chapter from The Process of Scientific Writing, an open guide to clear research articles.",
         author: {
           name: "Juho Vepsäläinen",
           site: "https://survivejs.com",
