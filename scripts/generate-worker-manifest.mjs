@@ -44,7 +44,6 @@ for (const textRoot of textRoots) {
 }
 
 const stylesheetHref = await findStylesheetHref();
-const themeToggleScriptHref = await findThemeToggleScriptHref();
 
 await mkdir(path.dirname(outputPath), { recursive: true });
 await writeFile(
@@ -53,7 +52,6 @@ await writeFile(
     "export const components = " + JSON.stringify(components, null, 2) + ";",
     "export const textFiles = " + JSON.stringify(textFiles, null, 2) + ";",
     "export const stylesheetHref = " + JSON.stringify(stylesheetHref) + ";",
-    "export const themeToggleScriptHref = " + JSON.stringify(themeToggleScriptHref) + ";",
     "",
   ].join("\n"),
 );
@@ -83,17 +81,6 @@ async function findStylesheetHref() {
     const stylesheet = entries.find((entry) => /^tailwind-[a-f0-9]+\.css$/.test(entry));
 
     return stylesheet ? `/${stylesheet}` : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-async function findThemeToggleScriptHref() {
-  try {
-    const entries = await readdir(path.join(root, "build", "assets"));
-    const script = entries.find((entry) => /^theme-toggle-[A-Za-z0-9_-]+\.js$/.test(entry));
-
-    return script ? `/assets/${script}` : undefined;
   } catch {
     return undefined;
   }

@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@tailwindcss/typography": "0.5.19",
-    "gustwind": "0.107.0"
+    "gustwind": "0.108.0"
   },
   "devDependencies": {
     "wrangler": "4.86.0"

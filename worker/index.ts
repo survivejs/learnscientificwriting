@@ -3,18 +3,19 @@ import { createCloudflareWorker } from "gustwind/workers/cloudflare";
 import { plugin as configRouterPlugin } from "gustwind/routers/config-router";
 import { plugin as edgeRendererPlugin } from "gustwind/plugins/htmlisp-edge-renderer";
 import { plugin as metaPlugin } from "gustwind/plugins/meta";
+import { plugin as scriptPlugin } from "gustwind/plugins/script";
 import * as dataSources from "../site/dataSources.ts";
 import * as globalUtilities from "../site/globalUtilities.ts";
 import * as HeadingWithAnchor from "../site/components/HeadingWithAnchor.server.ts";
 import * as Markdown from "../site/components/Markdown.server.ts";
 import * as SiteLink from "../site/components/SiteLink.server.ts";
+import scriptAssets from "../build/.gustwind/script-assets.json" with { type: "json" };
 import meta from "../site/meta.json";
 import routes from "../site/routes.json";
 import {
   components,
   stylesheetHref,
   textFiles,
-  themeToggleScriptHref,
 } from "./generated/site-manifest.js";
 
 const externalScripts = [
@@ -23,23 +24,6 @@ const externalScripts = [
     src: "https://unpkg.com/sidewind@8.0.0/dist/sidewind.umd.production.min.js",
   },
 ];
-const localScripts = themeToggleScriptHref
-  ? [{ type: "module", src: themeToggleScriptHref }]
-  : [];
-
-const staticScriptPlugin = {
-  meta: {
-    name: "static-script-plugin",
-    description: "Adds static script tags in Worker rendering.",
-  },
-  init() {
-    return {
-      prepareContext() {
-        return { context: { scripts: externalScripts.concat(localScripts) } };
-      },
-    };
-  },
-};
 
 const render = await initRender(initWorkerLoadApi, [
   [configRouterPlugin, {
@@ -47,7 +31,7 @@ const render = await initRender(initWorkerLoadApi, [
     routesPath: "site/routes.json",
   }],
   [metaPlugin, { meta }],
-  [staticScriptPlugin, {}],
+  [scriptPlugin, { scripts: externalScripts, scriptAssets }],
   [edgeRendererPlugin, {
     components,
     componentUtilities: {

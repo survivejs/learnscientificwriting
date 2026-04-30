@@ -26,9 +26,12 @@ test("worker render assets include the theme toggle component and script", () =>
   execFileSync("npm", ["run", "worker:prepare"], { stdio: "pipe" });
 
   const manifest = readFileSync("worker/generated/site-manifest.js", "utf8");
+  const scriptAssets = readFileSync("build/.gustwind/script-assets.json", "utf8");
   const worker = readFileSync("worker/index.ts", "utf8");
 
   assert.match(manifest, /"ThemeToggle":/);
-  assert.match(manifest, /export const themeToggleScriptHref = "\/assets\/theme-toggle-[^"]+\.js"/);
-  assert.match(worker, /themeToggleScriptHref/);
+  assert.match(scriptAssets, /"theme-toggle"/);
+  assert.match(scriptAssets, /"file": "\/assets\/theme-toggle-[^"]+\.js"/);
+  assert.match(worker, /scriptPlugin/);
+  assert.match(worker, /scriptAssets/);
 });
