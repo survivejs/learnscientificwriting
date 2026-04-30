@@ -1041,10 +1041,9 @@ function parseBookIndex(text: string) {
   }));
 }
 
+type SectionIndexEntry = { title: string; label: string; slug: string };
+
 function parseSectionIndex(text: string, chapterNumber?: string) {
-  const sections: { title: string; label: string; slug: string }[] = [];
-  const foundIds: Record<string, number> = {};
-  const headingNumbers = { h2: 0, h3: 0, h4: 0 };
   const ast = parseLatex(stripStandaloneLatexComments(text), {
     blocks: environments,
     doubles,
@@ -1056,6 +1055,17 @@ function parseSectionIndex(text: string, chapterNumber?: string) {
       label: el("label"),
     },
   });
+
+  return collectLabeledSections(ast, chapterNumber);
+}
+
+function collectLabeledSections(
+  ast: HtmlispChild[],
+  chapterNumber?: string,
+) {
+  const sections: SectionIndexEntry[] = [];
+  const foundIds: Record<string, number> = {};
+  const headingNumbers = { h2: 0, h3: 0, h4: 0 };
   let pendingHeading:
     | { title: string; slug: string }
     | undefined;
