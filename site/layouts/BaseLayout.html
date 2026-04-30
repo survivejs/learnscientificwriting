@@ -58,7 +58,7 @@
     </div>
     <aside
       &visibleIf="(and (get props aside) (get context document.hasTableOfContents))"
-      class="fixed ml-4 mt-16 hidden max-h-[calc(100vh-5rem)] overflow-y-auto xl:inline w-60 bg-white/80 backdrop-blur p-4 rounded border border-slate-200 shadow-sm dark:border-[#d9cdb8]/15 dark:bg-[#201c16]/88 dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)]"
+      class="sidebar-toc fixed ml-4 mt-12 hidden xl:inline w-60 bg-white/80 backdrop-blur p-4 rounded border border-slate-200 shadow-sm dark:border-[#d9cdb8]/15 dark:bg-[#201c16]/88 dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)]"
       &children="(get props aside)"
     ></aside>
     <main id="content" class="scroll-mt-24">

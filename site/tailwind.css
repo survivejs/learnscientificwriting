@@ -42,6 +42,13 @@
 }
 
 @layer components {
+  .sidebar-toc {
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: 1rem;
+  }
+
   .reference-entry:target {
     border-color: #b46b30;
     background: rgba(245, 234, 216, 0.78);
