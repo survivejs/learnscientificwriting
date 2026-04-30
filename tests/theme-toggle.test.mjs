@@ -20,3 +20,15 @@ test("theme toggle script is included on pages with the toggle", () => {
     assert.match(html, /src="\/assets\/theme-toggle-[^"]+\.js"/);
   }
 });
+
+test("worker render assets include the theme toggle component and script", () => {
+  execFileSync("npm", ["run", "build"], { stdio: "pipe" });
+  execFileSync("npm", ["run", "worker:prepare"], { stdio: "pipe" });
+
+  const manifest = readFileSync("worker/generated/site-manifest.js", "utf8");
+  const worker = readFileSync("worker/index.ts", "utf8");
+
+  assert.match(manifest, /"ThemeToggle":/);
+  assert.match(manifest, /export const themeToggleScriptHref = "\/assets\/theme-toggle-[^"]+\.js"/);
+  assert.match(worker, /themeToggleScriptHref/);
+});

@@ -10,7 +10,12 @@ import * as Markdown from "../site/components/Markdown.server.ts";
 import * as SiteLink from "../site/components/SiteLink.server.ts";
 import meta from "../site/meta.json";
 import routes from "../site/routes.json";
-import { components, stylesheetHref, textFiles } from "./generated/site-manifest.js";
+import {
+  components,
+  stylesheetHref,
+  textFiles,
+  themeToggleScriptHref,
+} from "./generated/site-manifest.js";
 
 const externalScripts = [
   {
@@ -18,6 +23,9 @@ const externalScripts = [
     src: "https://unpkg.com/sidewind@8.0.0/dist/sidewind.umd.production.min.js",
   },
 ];
+const localScripts = themeToggleScriptHref
+  ? [{ type: "module", src: themeToggleScriptHref }]
+  : [];
 
 const staticScriptPlugin = {
   meta: {
@@ -27,7 +35,7 @@ const staticScriptPlugin = {
   init() {
     return {
       prepareContext() {
-        return { context: { scripts: externalScripts } };
+        return { context: { scripts: externalScripts.concat(localScripts) } };
       },
     };
   },
