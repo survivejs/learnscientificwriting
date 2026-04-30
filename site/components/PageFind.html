@@ -3,7 +3,11 @@
   <script @src="state.src" x-attr onload="searchLoaded()"></script>
   <script>
     function searchLoaded(event) {
-      document.getElementById("search").innerHTML = "";
+      const search = document.getElementById("search");
+
+      if (!search) return;
+
+      search.replaceChildren();
       new PagefindUI({
         element: "#search",
         showSubResults: true,
@@ -12,4 +16,8 @@
     }
   </script>
 </LazyLoad>
-<div id="search">Loading...</div>
+<div id="search" role="status" aria-live="polite">
+  <span class="block rounded border border-slate-200 bg-white/70 px-4 py-3 text-sm text-muted dark:border-[#d9cdb8]/15 dark:bg-[#201c16]/70 dark:text-[#8fb9b9]">
+    Loading search...
+  </span>
+</div>
