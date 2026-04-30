@@ -371,7 +371,7 @@ function getTableOfContents(ast: HtmlispChild[]) {
   const foundIds: Record<string, number> = {};
 
   return ast.flatMap((node) => {
-    if (typeof node === "string" || !["h2", "h3"].includes(node.type)) {
+    if (typeof node === "string" || !["h2", "h3", "h4"].includes(node.type)) {
       return [];
     }
 
@@ -379,6 +379,10 @@ function getTableOfContents(ast: HtmlispChild[]) {
     const slug = getUniqueSlug(raw, foundIds);
 
     node.attributes = { ...node.attributes, id: slug };
+
+    if (node.type === "h4") {
+      return [];
+    }
 
     return [{
       slug,
@@ -451,24 +455,51 @@ function parseBookIndex(text: string) {
 }
 
 function parseSectionIndex(text: string) {
-  const sectionPattern =
-    /\\(?:section|subsection|subsubsection)\{([^}]*)\}\s*(?:\\label\{([^}]*)\})?/g;
   const sections: { title: string; label: string; slug: string }[] = [];
   const foundIds: Record<string, number> = {};
-  let match;
+  const ast = parseLatex(text, {
+    blocks: environments,
+    doubles,
+    singles: {
+      ...singles,
+      section: el("h2"),
+      subsection: el("h3"),
+      subsubsection: el("h4"),
+      label: el("label"),
+    },
+  });
+  let pendingHeading:
+    | { title: string; slug: string }
+    | undefined;
 
-  while ((match = sectionPattern.exec(text))) {
-    const [, title, label] = match;
-
-    if (!label) {
+  for (const node of ast) {
+    if (typeof node === "string") {
       continue;
     }
 
+    if (["h2", "h3", "h4"].includes(node.type)) {
+      const title = childrenToText(node.children || []);
+
+      pendingHeading = {
+        title,
+        slug: getUniqueSlug(title, foundIds),
+      };
+
+      continue;
+    }
+
+    if (node.type !== "label" || !pendingHeading) {
+      continue;
+    }
+
+    const label = childrenToText(node.children || []);
+
     sections.push({
-      title,
+      title: pendingHeading.title,
       label,
-      slug: getUniqueSlug(title, foundIds),
+      slug: pendingHeading.slug,
     });
+    pendingHeading = undefined;
   }
 
   return sections;
