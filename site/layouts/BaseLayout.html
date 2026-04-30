@@ -19,7 +19,7 @@
     /></noscript>
     <MetaFields />
   </head>
-  <body class="bg-[#fbfaf7] text-slate-900 antialiased">
+  <body class="bg-[#fbfaf7] text-slate-900 antialiased dark:bg-[#15130f] dark:text-[#f5ead8]">
     <a href="#content" class="sr-only focus:not-sr-only p-4">
       Skip to content
     </a>
@@ -32,19 +32,19 @@
     </div>
     <aside
       &visibleIf="(and (get props aside) (get context document.hasTableOfContents))"
-      class="fixed ml-4 mt-16 hidden xl:inline w-60 bg-white/80 backdrop-blur p-4 rounded border border-slate-200 shadow-sm"
+      class="fixed ml-4 mt-16 hidden xl:inline w-60 bg-white/80 backdrop-blur p-4 rounded border border-slate-200 shadow-sm dark:border-[#d9cdb8]/15 dark:bg-[#201c16]/88 dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)]"
       &children="(get props aside)"
     ></aside>
     <main id="content" class="scroll-mt-24">
       <input class="hidden peer/search" id="search__toggle" type="checkbox" />
       <div
-        class="hidden peer-checked/search:block fixed left-0 right-0 top-12 z-40 border-b border-muted/30 bg-white/95 shadow-lg print:hidden"
+        class="hidden peer-checked/search:block fixed left-0 right-0 top-12 z-40 border-b border-muted/30 bg-white/95 shadow-lg print:hidden dark:border-[#d9cdb8]/15 dark:bg-[#15130f]/95"
       >
         <div class="md:mx-auto p-4 md:px-0 w-full md:max-w-3xl">
           <div class="mb-3 flex justify-end">
             <label
               for="search__toggle"
-              class="cursor-pointer text-sm text-muted underline hover:text-primary"
+              class="cursor-pointer text-sm text-muted underline hover:text-primary dark:text-[#8fb9b9] dark:hover:text-[#f7ead0]"
               >Close search</label
             >
           </div>

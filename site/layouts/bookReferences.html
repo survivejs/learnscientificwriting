@@ -3,7 +3,7 @@
     <div
       class="md:mx-auto p-4 md:px-0 md:py-10 w-full md:max-w-3xl flex flex-col gap-10"
     >
-      <article class="flex flex-col gap-8 border-t-4 border-secondary pt-8">
+      <article class="flex flex-col gap-8 border-t-4 border-secondary pt-8 dark:border-[#8fb9b9]">
         <header class="flex flex-col gap-4">
           <Heading
             level="1"
@@ -11,7 +11,7 @@
           >
             References
           </Heading>
-          <p class="max-w-2xl font-serif text-lg leading-8 text-muted">
+          <p class="max-w-2xl font-serif text-lg leading-8 text-muted dark:text-[#8fb9b9]">
             Works cited in
             <em>The Process of Scientific Writing</em>.
           </p>
@@ -23,9 +23,9 @@
         >
           <li
             &id="(get props id)"
-            class="reference-entry scroll-mt-24 border-l-4 border-muted/20 px-4 py-3 transition"
+            class="reference-entry scroll-mt-24 border-l-4 border-muted/20 px-4 py-3 transition dark:border-[#8fb9b9]/25"
           >
-            <p class="text-lg leading-8 text-slate-900">
+            <p class="text-lg leading-8 text-slate-900 dark:text-[#f5ead8]">
               <span &children="(get props authors)" />
               <span> (</span>
               <span &children="(get props year)" />
@@ -34,20 +34,20 @@
               <span>.</span>
             </p>
             <p
-              class="mt-1 text-base leading-7 text-muted"
+              class="mt-1 text-base leading-7 text-muted dark:text-[#8fb9b9]"
               &visibleIf="(get props source)"
               &children="(get props source)"
             ></p>
             <div
-              class="mt-3 flex flex-wrap items-center gap-3 text-xs font-sans uppercase tracking-wide text-muted"
+              class="mt-3 flex flex-wrap items-center gap-3 text-xs font-sans uppercase tracking-wide text-muted dark:text-[#8fb9b9]"
             >
               <span
-                class="rounded-sm border border-muted/20 bg-white/60 px-2 py-1 normal-case tracking-normal"
+                class="rounded-sm border border-muted/20 bg-white/60 px-2 py-1 normal-case tracking-normal dark:border-[#8fb9b9]/25 dark:bg-[#201c16]/80"
                 >key:
                 <span &children="(get props id)" />
               </span>
               <button
-                class="rounded-sm border border-muted/20 bg-white/60 px-2 py-1 uppercase tracking-wide transition hover:border-warning hover:text-slate-950"
+                class="rounded-sm border border-muted/20 bg-white/60 px-2 py-1 uppercase tracking-wide transition hover:border-warning hover:text-slate-950 dark:border-[#8fb9b9]/25 dark:bg-[#201c16]/80 dark:hover:text-[#f7ead0]"
                 type="button"
                 onclick="navigator.clipboard?.writeText(this.dataset.copy || '')"
                 &data-copy="(get props citation)"
@@ -57,13 +57,13 @@
               </button>
               <a
                 &visibleIf="(get props doi)"
-                class="underline decoration-muted underline-offset-4 hover:text-slate-950"
+                class="underline decoration-muted underline-offset-4 hover:text-slate-950 dark:decoration-[#8fb9b9] dark:hover:text-[#f7ead0]"
                 &href="(get props doiUrl)"
                 >DOI</a
               >
               <a
                 &visibleIf="(get props url)"
-                class="underline decoration-muted underline-offset-4 hover:text-slate-950"
+                class="underline decoration-muted underline-offset-4 hover:text-slate-950 dark:decoration-[#8fb9b9] dark:hover:text-[#f7ead0]"
                 &href="(get props url)"
                 >URL</a
               >

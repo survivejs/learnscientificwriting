@@ -4,15 +4,15 @@
   x-closest="{ state: { closest: document.querySelectorAll('main h2, main h3') } }"
   class="text-sm"
 >
-  <div class="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
+  <div class="mb-3 text-xs font-semibold uppercase tracking-wide text-muted dark:text-[#8fb9b9]">
     On this page
   </div>
   <ul &foreach="(get props toc)" class="flex flex-col gap-1.5">
     <li>
       <a
         x-attr
-        class="block border-l-2 border-transparent py-1 pl-3 leading-snug text-muted hover:border-slate-400 hover:text-slate-950"
-        @class="[element.getAttribute('href')?.slice(1) === parent.closest?.id && `border-muted text-slate-950 font-medium`]"
+        class="block border-l-2 border-transparent py-1 pl-3 leading-snug text-muted hover:border-slate-400 hover:text-slate-950 dark:text-[#8fb9b9] dark:hover:border-[#d9cdb8]/50 dark:hover:text-[#f7ead0]"
+        @class="[element.getAttribute('href')?.slice(1) === parent.closest?.id && `border-muted text-slate-950 font-medium dark:border-[#8fb9b9] dark:text-[#f7ead0]`]"
         @aria-current="element.getAttribute('href')?.slice(1) === parent.closest?.id ? 'location' : undefined"
         &href="(concat # (get props slug))"
         &children="(get props raw)"

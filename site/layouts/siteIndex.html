@@ -1,11 +1,11 @@
 <BaseLayout>
   <slot name="content">
-    <header class="border-b border-secondary/20 bg-primary">
+    <header class="border-b border-secondary/20 bg-primary dark:border-[#d9cdb8]/15 dark:bg-[#201c16]">
       <div
         class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end"
       >
         <div class="mx-auto flex max-w-3xl flex-col gap-6 text-center lg:mx-0 lg:text-left">
-          <p class="text-sm font-semibold uppercase tracking-wide text-muted">
+          <p class="text-sm font-semibold uppercase tracking-wide text-muted dark:text-[#8fb9b9]">
             A practical open book
           </p>
           <h1 class="font-serif text-5xl font-bold leading-tight md:text-7xl">
@@ -16,31 +16,31 @@
           </h2>
           <div class="flex flex-col items-center gap-3 pt-2 sm:flex-row sm:justify-center lg:justify-start">
             <a
-              class="inline-flex w-fit rounded bg-slate-950 px-5 py-3 font-semibold text-white no-underline hover:bg-muted"
+              class="inline-flex w-fit rounded bg-slate-950 px-5 py-3 font-semibold text-white no-underline hover:bg-muted dark:bg-[#f5ead8] dark:text-[#15130f] dark:hover:bg-[#d9cdb8]"
               href="/book/"
               >Start reading</a
             >
             <a
-              class="inline-flex w-fit rounded border border-slate-300 px-5 py-3 font-semibold text-slate-950 no-underline hover:border-muted hover:text-muted"
+              class="inline-flex w-fit rounded border border-slate-300 px-5 py-3 font-semibold text-slate-950 no-underline hover:border-muted hover:text-muted dark:border-[#d9cdb8]/25 dark:text-[#f5ead8] dark:hover:border-[#8fb9b9] dark:hover:text-[#8fb9b9]"
               href="#contents"
               >View chapters</a
             >
           </div>
         </div>
         <div
-          class="hidden border-l-4 border-warning bg-[#fffaf0] p-6 shadow-[12px_12px_0_#12343b] lg:block"
+          class="hidden border-l-4 border-warning bg-[#fffaf0] p-6 shadow-[12px_12px_0_#12343b] lg:block dark:bg-[#181611] dark:shadow-[12px_12px_0_#5f7f7f]"
           aria-hidden="true"
         >
-          <div class="mb-5 flex items-center justify-between text-xs uppercase tracking-wide text-muted">
+          <div class="mb-5 flex items-center justify-between text-xs uppercase tracking-wide text-muted dark:text-[#8fb9b9]">
             <span>Draft margin</span>
             <span>rev. 04</span>
           </div>
-          <div class="space-y-4 font-serif text-lg leading-7 text-slate-900">
+          <div class="space-y-4 font-serif text-lg leading-7 text-slate-900 dark:text-[#f5ead8]">
             <p>
-              <span class="bg-warning/20 px-1">Claim</span> first, evidence
+              <span class="bg-warning/20 px-1 dark:bg-warning/35">Claim</span> first, evidence
               next.
             </p>
-            <p class="border-l border-muted/30 pl-4 text-base">
+            <p class="border-l border-muted/30 pl-4 text-base dark:border-[#8fb9b9]/35">
               A good paper shows how the reader should move from question to
               method to result.
             </p>
@@ -52,7 +52,7 @@
       </div>
     </header>
     <div
-      class="md:mx-auto my-12 px-4 md:px-0 w-full lg:max-w-3xl prose lg:prose-xl prose-slate prose-p:leading-8"
+      class="md:mx-auto my-12 px-4 md:px-0 w-full lg:max-w-3xl prose lg:prose-xl prose-slate prose-p:leading-8 dark:prose-invert dark:prose-headings:text-[#f7ead0] dark:prose-a:text-[#8fb9b9] dark:hover:prose-a:text-[#f7ead0] dark:prose-strong:text-[#f7ead0]"
     >
       <section>
         <Heading class="sr-only" level="2">Description</Heading>
@@ -72,7 +72,7 @@
           manner or another.
         </Markdown>
       </section>
-      <section id="contents" class="mt-12 border-t-4 border-secondary pt-8">
+      <section id="contents" class="mt-12 border-t-4 border-secondary pt-8 dark:border-[#8fb9b9]">
         <BookTableOfContents prefix="/book/" />
       </section>
     </div>

@@ -3,7 +3,7 @@
     <div
       class="md:mx-auto p-4 md:px-0 md:py-10 w-full md:max-w-3xl flex flex-col gap-10"
     >
-      <article class="flex flex-col gap-8 border-t-4 border-secondary pt-8">
+      <article class="flex flex-col gap-8 border-t-4 border-secondary pt-8 dark:border-[#8fb9b9]">
         <Heading
           level="1"
           class="font-serif font-bold text-4xl md:text-6xl leading-tight tracking-normal"
@@ -11,7 +11,7 @@
         ></Heading>
         <DocumentationMeta &document="(get context document)" />
         <div
-          class="prose lg:prose-xl prose-slate font-serif prose-p:leading-8 prose-li:leading-8 prose-headings:font-serif prose-headings:tracking-normal prose-headings:text-slate-950 prose-a:text-muted hover:prose-a:text-slate-950 prose-blockquote:border-warning prose-blockquote:bg-primary/50 prose-blockquote:px-5 prose-blockquote:py-2 prose-code:text-slate-800"
+          class="prose lg:prose-xl prose-slate font-serif prose-p:leading-8 prose-li:leading-8 prose-headings:font-serif prose-headings:tracking-normal prose-headings:text-slate-950 prose-a:text-muted hover:prose-a:text-slate-950 prose-blockquote:border-warning prose-blockquote:bg-primary/50 prose-blockquote:px-5 prose-blockquote:py-2 prose-code:text-slate-800 dark:prose-invert dark:prose-headings:text-[#f7ead0] dark:prose-a:text-[#8fb9b9] dark:hover:prose-a:text-[#f7ead0] dark:prose-blockquote:bg-[#201c16] dark:prose-code:text-[#f5ead8] dark:prose-strong:text-[#f7ead0]"
           &children="(get context document.content)"
         ></div>
       </article>
