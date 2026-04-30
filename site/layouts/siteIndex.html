@@ -1,19 +1,34 @@
 <BaseLayout>
   <slot name="content">
-    <header class="bg-primary py-8">
-      <div class="sm:mx-auto px-4 py-4 sm:py-8 max-w-3xl flex">
-        <div class="flex flex-col gap-8">
-          <h1 class="text-4xl md:text-4xl">
+    <header class="bg-primary border-b border-slate-200">
+      <div class="sm:mx-auto px-4 py-12 sm:py-16 max-w-3xl flex">
+        <div class="flex flex-col gap-6">
+          <p class="text-sm font-semibold uppercase tracking-wide text-muted">
+            A practical open book
+          </p>
+          <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
             <span>Learn scientific writing</span>
           </h1>
-          <h2 class="text-xl md:text-2xl font-extralight">
+          <h2 class="max-w-2xl text-xl md:text-2xl font-extralight leading-relaxed">
             Your roadmap to impactful research articles
           </h2>
+          <div class="flex flex-col sm:flex-row gap-3 pt-2">
+            <a
+              class="inline-flex w-fit rounded bg-slate-950 px-5 py-3 font-semibold text-white no-underline hover:bg-muted"
+              href="/book/"
+              >Start reading</a
+            >
+            <a
+              class="inline-flex w-fit rounded border border-slate-300 px-5 py-3 font-semibold text-slate-950 no-underline hover:border-muted hover:text-muted"
+              href="#contents"
+              >View chapters</a
+            >
+          </div>
         </div>
       </div>
     </header>
     <div
-      class="md:mx-auto my-8 px-4 md:px-0 w-full lg:max-w-3xl prose lg:prose-xl"
+      class="md:mx-auto my-10 px-4 md:px-0 w-full lg:max-w-3xl prose lg:prose-xl prose-slate prose-p:leading-8"
     >
       <section>
         <Heading class="sr-only" level="2">Description</Heading>
@@ -33,7 +48,7 @@
           manner or another.
         </Markdown>
       </section>
-      <section>
+      <section id="contents" class="mt-10 border-t border-slate-200 pt-8">
         <BookTableOfContents prefix="/book/" />
       </section>
     </div>
