@@ -260,7 +260,7 @@ function init({ load }: DataSourcesApi) {
     // const { bibtex } = this.parentDataSources;
     const bibtex = await loadBibtex();
 
-    const chapterText = stripStandaloneLatexComments(await load.textFile(path));
+    const chapterText = normalizeLatexSource(await load.textFile(path));
 
     validateLatexReferences(path, chapterText, bibtex, refIndex);
 
@@ -554,8 +554,10 @@ function stripLatexComments(text: string) {
     .join("\n");
 }
 
-function stripStandaloneLatexComments(text: string) {
-  return text.replace(/^[ \t]*%(?:.*)(?:\r?\n|$)/gm, "");
+function normalizeLatexSource(text: string) {
+  return text
+    .replace(/^[ \t]*%(?:.*)(?:\r?\n|$)/gm, "")
+    .replace(/\\-/g, "");
 }
 
 function stripFirstMarkdownHeading(text: string) {
@@ -1013,7 +1015,7 @@ function toAlphabeticIndex(index: number) {
 }
 
 function parseBookIndex(text: string) {
-  const ast = parseLatex(stripStandaloneLatexComments(text), {
+  const ast = parseLatex(normalizeLatexSource(text), {
     blocks: environments,
     doubles,
     singles: {
@@ -1046,7 +1048,7 @@ function parseBookIndex(text: string) {
 type SectionIndexEntry = { title: string; label: string; slug: string };
 
 function parseSectionIndex(text: string, chapterNumber?: string) {
-  const ast = parseLatex(stripStandaloneLatexComments(text), {
+  const ast = parseLatex(normalizeLatexSource(text), {
     blocks: environments,
     doubles,
     singles: {
