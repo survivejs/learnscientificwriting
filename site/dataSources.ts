@@ -234,22 +234,11 @@ function init({ load }: DataSourcesApi) {
       blocks: environments,
       doubles,
       // TODO: Connect refs here
-        singles: {
-          ...singles,
-          ...cites(bibtex),
-          citep: (children: HtmlispChild[]) => {
-            const ids = childrenToText(children).split(",").map((id) =>
-              id.trim()
-            ).filter(Boolean);
-
-            return {
-              type: "span",
-              attributes: { title: getCitationTitle(ids, bibtex) },
-              children: [`(${ids.map((id) => formatParentheticalCitation(id, bibtex)).join("; ")})`],
-            };
-          },
-          footnote: (children: HtmlispChild[]) => {
-            footnotes++;
+      singles: {
+        ...singles,
+        ...cites(bibtex),
+        footnote: (children: HtmlispChild[]) => {
+          footnotes++;
 
           return {
             type: "sup",
@@ -370,52 +359,6 @@ function sanitizeBibtexEntries(
       },
     ]),
   );
-}
-
-function formatParentheticalCitation(
-  id: string,
-  entries: Record<string, { fields?: Record<string, string> }>,
-) {
-  const entry = entries[id];
-
-  if (!entry) {
-    throw new Error(`No matching BibTeX entry was found for ${id}`);
-  }
-
-  const author = entry.fields?.author || "";
-  const authorCount = author.split(/\s+and\s+/i).filter(Boolean).length;
-  const surname = getFirstAuthorSurname(author);
-  const year = entry.fields?.year || "";
-  const authorText = authorCount > 1 ? `${surname} et al.` : surname;
-
-  return [authorText, year].filter(Boolean).join(", ");
-}
-
-function getCitationTitle(
-  ids: string[],
-  entries: Record<string, { fields?: Record<string, string> }>,
-) {
-  return ids.map((id) => {
-    const entry = entries[id];
-
-    if (!entry) {
-      throw new Error(`No matching BibTeX entry was found for ${id}`);
-    }
-
-    return [entry.fields?.title, entry.fields?.author].filter(Boolean).join(
-      " - ",
-    );
-  }).join(", ");
-}
-
-function getFirstAuthorSurname(author: string) {
-  const firstAuthor = author.split(/\s+and\s+/i)[0]?.trim() || "";
-
-  if (firstAuthor.includes(",")) {
-    return firstAuthor.split(",")[0].trim();
-  }
-
-  return firstAuthor.split(/\s+/).at(-1) || firstAuthor;
 }
 
 type HtmlispChild = string | {

@@ -8,6 +8,7 @@
     "worker:build": "npm run bootstrap && npm run build && npm run worker:prepare",
     "worker:dev": "npm run worker:build && wrangler dev",
     "deploy": "npm run worker:build && wrangler deploy",
+    "postinstall": "patch-package",
     "start": "gustwind --develop --port 3000",
     "serve": "gustwind --serve --port 3000 --input ./build",
     "validate": "gustwind --validate --input ./build"
@@ -20,6 +21,7 @@
     "gustwind": "0.100.0"
   },
   "devDependencies": {
+    "patch-package": "8.0.1",
     "wrangler": "4.86.0"
   }
 }
