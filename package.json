@@ -6,8 +6,7 @@
     "build": "gustwind --build --output ./build --no-incremental",
     "start": "gustwind --develop --port 3000",
     "serve": "gustwind --serve --port 3000 --input ./build",
-    "validate": "gustwind --validate --input ./build",
-    "postinstall": "patch-package"
+    "validate": "gustwind --validate --input ./build"
   },
   "engines": {
     "node": ">=24"
@@ -19,8 +18,5 @@
     "@twind/preset-tailwind": "1.1.1",
     "@twind/preset-typography": "1.0.5",
     "gustwind": "0.100.0"
-  },
-  "devDependencies": {
-    "patch-package": "8.0.1"
   }
 }
