@@ -1,0 +1,124 @@
+diff --git a/node_modules/gustwind/htmlisp/mod.js b/node_modules/gustwind/htmlisp/mod.js
+index 6ee5393..432c683 100644
+--- a/node_modules/gustwind/htmlisp/mod.js
++++ b/node_modules/gustwind/htmlisp/mod.js
+@@ -1683,11 +1683,17 @@ function parseLatex(input, parser) {
+     blockParsers,
+     listParsers,
+     getParseContent(
+-      (children) => ({
+-        type: "p",
+-        attributes: {},
+-        children
+-      }),
++      (children) => {
++        children = children.filter((child) => child !== "");
++        if (!children.length) {
++          return;
++        }
++        return {
++          type: "p",
++          attributes: {},
++          children
++        };
++      },
+       // @ts-expect-error This is fine for now as it will be fixed in a later TS most likely.
+       [singleParsers, doubleParsers].filter(Boolean)
+     )
+@@ -1705,15 +1711,30 @@ function parseLatex(input, parser) {
+       if ("matchCounts" in parseResult && parseResult.matchCounts) {
+         matchCounts = parseResult.matchCounts;
+       }
+-      ret.push(parseResult.value);
++      const value = parseResult.value;
++      if (value?.type === "p") {
++        const leadingInlineNodes = [];
++        while (isInlineLatexNode(ret.at(-1))) {
++          leadingInlineNodes.unshift(ret.pop());
++        }
++        if (leadingInlineNodes.length) {
++          value.children = leadingInlineNodes.concat(value.children);
++        }
++      }
++      ret.push(value);
+     }
+-    const c = getCharacter.next();
+-    if (c === null) {
+-      break;
++    if (!parseResult?.match) {
++      const c = getCharacter.next();
++      if (c === null) {
++        break;
++      }
+     }
+   }
+   return ret;
+ }
++function isInlineLatexNode(node) {
++  return node && typeof node === "object" && ["a", "code", "em", "span", "strong", "sup"].includes(node.type);
++}
+ 
+ // htmlisp/parsers/latex/parsers/definition_item.ts
+ var STATES6 = {
+diff --git a/node_modules/gustwind/htmlisp/parsers/latex/parseLatex.js b/node_modules/gustwind/htmlisp/parsers/latex/parseLatex.js
+index bf08d56..a41c7b4 100644
+--- a/node_modules/gustwind/htmlisp/parsers/latex/parseLatex.js
++++ b/node_modules/gustwind/htmlisp/parsers/latex/parseLatex.js
+@@ -370,11 +370,17 @@ function parseLatex(input, parser) {
+     blockParsers,
+     listParsers,
+     getParseContent(
+-      (children) => ({
+-        type: "p",
+-        attributes: {},
+-        children
+-      }),
++      (children) => {
++        children = children.filter((child) => child !== "");
++        if (!children.length) {
++          return;
++        }
++        return {
++          type: "p",
++          attributes: {},
++          children
++        };
++      },
+       // @ts-expect-error This is fine for now as it will be fixed in a later TS most likely.
+       [singleParsers, doubleParsers].filter(Boolean)
+     )
+@@ -392,15 +398,30 @@ function parseLatex(input, parser) {
+       if ("matchCounts" in parseResult && parseResult.matchCounts) {
+         matchCounts = parseResult.matchCounts;
+       }
+-      ret.push(parseResult.value);
++      const value = parseResult.value;
++      if (value?.type === "p") {
++        const leadingInlineNodes = [];
++        while (isInlineLatexNode(ret.at(-1))) {
++          leadingInlineNodes.unshift(ret.pop());
++        }
++        if (leadingInlineNodes.length) {
++          value.children = leadingInlineNodes.concat(value.children);
++        }
++      }
++      ret.push(value);
+     }
+-    const c = getCharacter.next();
+-    if (c === null) {
+-      break;
++    if (!parseResult?.match) {
++      const c = getCharacter.next();
++      if (c === null) {
++        break;
++      }
+     }
+   }
+   return ret;
+ }
++function isInlineLatexNode(node) {
++  return node && typeof node === "object" && ["a", "code", "em", "span", "strong", "sup"].includes(node.type);
++}
+ export {
+   parseLatex
+ };
