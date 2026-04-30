@@ -30,6 +30,7 @@
       &visibleIf="(get context document.hasTableOfContents)"
     >
       <TableOfContents &toc="(get context document.tableOfContents)" />
+      <BookContentsSidebar &contents="(get context document.bookContents)" />
     </div>
   </slot>
 </BaseLayout>

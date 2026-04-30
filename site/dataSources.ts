@@ -59,6 +59,22 @@ const environments = {
   },
 };
 
+type BookEntry = {
+  title: string;
+  label: string;
+  slug: string;
+  path: string;
+  number: string;
+  unnumberedTitle: string;
+};
+
+type BookIndex = {
+  chapters: BookEntry[];
+  appendices: BookEntry[];
+};
+
+type BibtexEntries = Record<string, { fields?: Record<string, string> }>;
+
 function parseUntilEndEnvironment(environment: string) {
   return (getCharacter: {
     getIndex(): number;
@@ -241,24 +257,32 @@ function init({ load }: DataSourcesApi) {
   }
 
   async function processChapter(
+    this: {
+      parentDataSources?: {
+        bookIndex?: BookIndex | BookEntry[];
+        bibtex?: BibtexEntries;
+      };
+    },
     { path, title }: {
       path: string;
       title: string;
     },
   ) {
-    const bookIndex = await indexBook(
-      "./book/chapters.tex",
-      "./book/appendices.tex",
-      { flatten: true },
-    );
+    const parentDataSources = this?.parentDataSources;
+    const inheritedBookIndex = parentDataSources?.bookIndex;
+    const bookIndex = Array.isArray(inheritedBookIndex)
+      ? inheritedBookIndex
+      : inheritedBookIndex
+      ? flattenBookIndex(inheritedBookIndex)
+      : await indexBook(
+        "./book/chapters.tex",
+        "./book/appendices.tex",
+        { flatten: true },
+      );
     const refIndex = bookIndex.concat(await indexBookSections(bookIndex));
     const currentEntry = bookIndex.find((entry) => entry.path === path);
     const { previous, next } = getAdjacentEntries(bookIndex, path);
-
-    // TODO: Pass book index here as well since that's needed for label linking
-    // TODO: Add proper nesting to gustwind to allow loading any data from a parent
-    // const { bibtex } = this.parentDataSources;
-    const bibtex = await loadBibtex();
+    const bibtex = parentDataSources?.bibtex || await loadBibtex();
 
     const chapterText = normalizeLatexSource(await load.textFile(path));
 
@@ -307,6 +331,7 @@ function init({ load }: DataSourcesApi) {
       },
       tableOfContents,
       hasTableOfContents: tableOfContents.length > 0,
+      bookContents: getSidebarBookContents(bookIndex),
       content,
       previous,
       next,
@@ -861,6 +886,35 @@ function getAdjacentEntries(
     previous: formatAdjacentEntry(entries[index - 1]),
     next: formatAdjacentEntry(entries[index + 1]),
   };
+}
+
+function getSidebarBookContents(
+  entries: {
+    number: string;
+    unnumberedTitle: string;
+    slug: string;
+  }[],
+) {
+  const formatEntry = (
+    entry: { number: string; unnumberedTitle: string; slug: string },
+  ) => ({
+    number: entry.number,
+    title: entry.unnumberedTitle,
+    href: `/book/${entry.slug}/`,
+  });
+
+  return {
+    chapters: entries.filter((entry) => /^\d+$/.test(entry.number)).map(
+      formatEntry,
+    ),
+    appendices: entries.filter((entry) => /^[A-Z]+$/.test(entry.number)).map(
+      formatEntry,
+    ),
+  };
+}
+
+function flattenBookIndex(bookIndex: BookIndex) {
+  return bookIndex.chapters.concat(bookIndex.appendices);
 }
 
 function formatAdjacentEntry(
