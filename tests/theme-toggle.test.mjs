@@ -32,7 +32,7 @@ test("worker render assets include the theme toggle component and script", () =>
   assert.match(manifest, /"ThemeToggle":/);
   assert.match(scriptAssets, /"theme-toggle"/);
   assert.match(scriptAssets, /"file": "\/assets\/theme-toggle-[^"]+\.js"/);
-  assert.match(worker, /workerScriptPlugin/);
+  assert.match(worker, /scriptPlugin/);
   assert.match(worker, /scriptAssets/);
   assert.doesNotMatch(worker, /themeToggleScriptHref/);
 });

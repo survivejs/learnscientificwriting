@@ -3,6 +3,7 @@ import { createCloudflareWorker } from "gustwind/workers/cloudflare";
 import { plugin as configRouterPlugin } from "gustwind/routers/config-router";
 import { plugin as edgeRendererPlugin } from "gustwind/plugins/htmlisp-edge-renderer";
 import { plugin as metaPlugin } from "gustwind/plugins/meta";
+import { plugin as scriptPlugin } from "gustwind/plugins/script";
 import * as dataSources from "../site/dataSources.ts";
 import * as globalUtilities from "../site/globalUtilities.ts";
 import * as HeadingWithAnchor from "../site/components/HeadingWithAnchor.server.ts";
@@ -24,32 +25,13 @@ const externalScripts = [
   },
 ];
 
-const workerScriptPlugin = {
-  meta: {
-    name: "worker-script-assets-plugin",
-    description: "Adds prebuilt script assets in Worker rendering.",
-  },
-  init() {
-    return {
-      prepareContext({ route }: { route: { scripts?: { name: string }[] } }) {
-        const routeScripts = (route.scripts || [])
-          .map(({ name }) => scriptAssets[name as keyof typeof scriptAssets])
-          .filter((asset): asset is { file: string } => Boolean(asset?.file))
-          .map(({ file }) => ({ type: "module", src: file }));
-
-        return { context: { scripts: externalScripts.concat(routeScripts) } };
-      },
-    };
-  },
-};
-
 const render = await initRender(initWorkerLoadApi, [
   [configRouterPlugin, {
     dataSourcesPath: "site/dataSources.ts",
     routesPath: "site/routes.json",
   }],
   [metaPlugin, { meta }],
-  [workerScriptPlugin, {}],
+  [scriptPlugin, { scripts: externalScripts, scriptAssets }],
   [edgeRendererPlugin, {
     components,
     componentUtilities: {
