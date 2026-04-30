@@ -82,13 +82,10 @@ function init({ load }: DataSourcesApi) {
     return sanitizeBibtexEntries(parseBibtexCollection(bibtexText));
   }
 
-  // TODO: Attach prev/next info during indexing pass
   async function processChapter(
     { path, title }: {
       path: string;
       title: string;
-      // previous: MarkdownWithFrontmatter;
-      // next: MarkdownWithFrontmatter;
     },
   ) {
     const bookIndex = await indexBook(
@@ -96,6 +93,7 @@ function init({ load }: DataSourcesApi) {
       "./book/appendices.tex",
       { flatten: true },
     );
+    const { previous, next } = getAdjacentEntries(bookIndex, path);
 
     // TODO: Pass book index here as well since that's needed for label linking
     // TODO: Add proper nesting to gustwind to allow loading any data from a parent
@@ -136,9 +134,8 @@ function init({ load }: DataSourcesApi) {
       },
       tableOfContents: [], // TODO: Generate based on AST
       content,
-      // TODO: Generate during indexing
-      previous: "TODO",
-      next: "TODO",
+      previous,
+      next,
     };
   }
 
@@ -157,6 +154,33 @@ function getRefs(refEntries: { title: string; label: string; slug: string }[]) {
         attributes: { href: ref?.slug || "#" },
         children: [ref?.title || id],
       };
+    },
+  };
+}
+
+function getAdjacentEntries(
+  entries: { title: string; slug: string; path: string }[],
+  path: string,
+) {
+  const index = entries.findIndex((entry) => entry.path === path);
+
+  return {
+    previous: formatAdjacentEntry(entries[index - 1]),
+    next: formatAdjacentEntry(entries[index + 1]),
+  };
+}
+
+function formatAdjacentEntry(
+  entry?: { title: string; slug: string },
+) {
+  if (!entry) {
+    return;
+  }
+
+  return {
+    data: {
+      title: entry.title,
+      slug: `/book/${entry.slug}/`,
     },
   };
 }
