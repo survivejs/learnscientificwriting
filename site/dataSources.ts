@@ -156,13 +156,10 @@ function init({ load }: DataSourcesApi) {
     filename: string,
     o?: { skipFirstLine: boolean },
   ) {
-    // Drop title from the first line
-    // This is not cleanest solution since sometimes you have something else there!
-    // TODO: It would be better to check for the existence of # before removing the line
     const lines = await load.textFile(filename);
 
     return markdown(
-      o?.skipFirstLine ? lines.split("\n").slice(1).join("\n") : lines,
+      o?.skipFirstLine ? stripFirstMarkdownHeading(lines) : lines,
       filename,
     );
   }
@@ -557,6 +554,16 @@ function stripLatexComments(text: string) {
 
 function stripStandaloneLatexComments(text: string) {
   return text.replace(/^[ \t]*%(?:.*)(?:\r?\n|$)/gm, "");
+}
+
+function stripFirstMarkdownHeading(text: string) {
+  const [firstLine = "", ...rest] = text.split("\n");
+
+  if (/^#{1,6}\s+\S/.test(firstLine.trim())) {
+    return rest.join("\n");
+  }
+
+  return text;
 }
 
 function formatReference(
