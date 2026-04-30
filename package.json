@@ -10,6 +10,7 @@
     "deploy": "npm run worker:build && wrangler deploy",
     "start": "gustwind --develop --port 3000",
     "serve": "gustwind --serve --port 3000 --input ./build",
+    "content:todos": "node scripts/report-content-todos.mjs",
     "validate": "gustwind --validate --input ./build"
   },
   "engines": {
