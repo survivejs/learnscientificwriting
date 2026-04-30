@@ -4,6 +4,7 @@
     "bootstrap": "bash scripts/bootstrap.sh",
     "fetch:book-repository": "bash scripts/fetch-book.sh",
     "build": "gustwind --build --output ./build --no-incremental",
+    "test": "node --test",
     "worker:prepare": "node scripts/generate-worker-manifest.mjs",
     "worker:build": "npm run bootstrap && npm run build && npm run worker:prepare",
     "worker:dev": "npm run worker:build && wrangler dev",

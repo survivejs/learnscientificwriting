@@ -40,6 +40,7 @@
     "routes": {
       "references": {
         "layout": "bookReferences",
+        "scripts": [{ "name": "theme-toggle" }],
         "context": {
           "meta": {
             "title": "References",
@@ -69,6 +70,7 @@
         "slug": "slug"
       },
       "layout": "bookPage",
+      "scripts": [{ "name": "theme-toggle" }],
       "dataSources": {
         "document": {
           "operation": "processChapter"
