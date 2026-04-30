@@ -262,7 +262,7 @@ function init({ load }: DataSourcesApi) {
     // const { bibtex } = this.parentDataSources;
     const bibtex = await loadBibtex();
 
-    const chapterText = await load.textFile(path);
+    const chapterText = stripStandaloneLatexComments(await load.textFile(path));
     let footnotes = 0;
     const parser = {
       blocks: environments,
@@ -348,6 +348,21 @@ function getLinkedCites(
         ),
       };
     },
+    fullcite: (
+      children: HtmlispChild[],
+      matchCounts: Record<string, string[]>,
+    ) => {
+      const ids = getCitationIds(children, matchCounts.fullcite);
+
+      return {
+        type: "span",
+        attributes: { title: escapeAttribute(getCitationTitle(ids, entries)) },
+        children: joinHtmlispChildren(
+          ids.map((id) => citationLink(id, entries[id], formatFullCitation)),
+          "; ",
+        ),
+      };
+    },
   };
 }
 
@@ -396,6 +411,22 @@ function formatTextualCitation(
   const year = fields.year || "n.d.";
 
   return `${author} (${year})`;
+}
+
+function formatFullCitation(
+  id: string,
+  entry?: { fields?: Record<string, string> },
+) {
+  const reference = formatReference(id, entry || {});
+
+  return [
+    reference.authors,
+    `(${reference.year}).`,
+    `${reference.title}.`,
+    reference.source,
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
 function formatCitationAuthors(author: string) {
@@ -464,6 +495,10 @@ function stripLatexComments(text: string) {
     .split("\n")
     .map((line) => line.replace(/(?<!\\)%.*/, ""))
     .join("\n");
+}
+
+function stripStandaloneLatexComments(text: string) {
+  return text.replace(/^[ \t]*%(?:.*)(?:\r?\n|$)/gm, "");
 }
 
 function formatReference(
@@ -907,7 +942,7 @@ function toAlphabeticIndex(index: number) {
 }
 
 function parseBookIndex(text: string) {
-  const ast = parseLatex(text, {
+  const ast = parseLatex(stripStandaloneLatexComments(text), {
     blocks: environments,
     doubles,
     singles: {
@@ -941,7 +976,7 @@ function parseSectionIndex(text: string, chapterNumber?: string) {
   const sections: { title: string; label: string; slug: string }[] = [];
   const foundIds: Record<string, number> = {};
   const headingNumbers = { h2: 0, h3: 0, h4: 0 };
-  const ast = parseLatex(text, {
+  const ast = parseLatex(stripStandaloneLatexComments(text), {
     blocks: environments,
     doubles,
     singles: {
