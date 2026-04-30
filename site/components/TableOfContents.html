@@ -12,7 +12,8 @@
       <a
         x-attr
         class="block border-l-2 border-transparent py-1 pl-3 leading-snug text-muted hover:border-slate-400 hover:text-slate-950"
-        @class="[element.firstChild?.textContent.trim() === parent.closest?.firstChild?.textContent.trim() && `border-muted text-slate-950 font-medium`]"
+        @class="[element.getAttribute('href')?.slice(1) === parent.closest?.id && `border-muted text-slate-950 font-medium`]"
+        @aria-current="element.getAttribute('href')?.slice(1) === parent.closest?.id ? 'location' : undefined"
         &href="(concat # (get props slug))"
         &children="(get props raw)"
       ></a>
