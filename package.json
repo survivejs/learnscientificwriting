@@ -9,7 +9,7 @@
     "validate": "gustwind --validate --input ./build"
   },
   "engines": {
-    "node": ">=24"
+    "node": "24.x"
   },
   "dependencies": {
     "@tailwindcss/typography": "0.5.19",
