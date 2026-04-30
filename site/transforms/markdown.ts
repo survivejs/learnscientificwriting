@@ -34,7 +34,7 @@ marked.setOptions({
 });
 
 function getTransformMarkdown(load: DataSourcesApi["load"]) {
-  return function transformMarkdown(input: string) {
+  return function transformMarkdown(input: string, sourcePath = "<markdown>") {
     if (typeof input !== "string") {
       console.error("input", input);
       throw new Error("transformMarkdown - passed wrong type of input");
@@ -114,8 +114,16 @@ function getTransformMarkdown(load: DataSourcesApi["load"]) {
         }
 
         if (text === "<file>") {
-          // TODO: Show a nice error in case href is not found in the fs
-          const fileContents = load.textFileSync(href);
+          let fileContents = "";
+
+          try {
+            fileContents = load.textFileSync(href);
+          } catch (error) {
+            throw new Error(
+              `${sourcePath}: unable to include Markdown file link target "${href}"`,
+              { cause: error },
+            );
+          }
 
           return this.code({
             type: "code",

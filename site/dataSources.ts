@@ -163,6 +163,7 @@ function init({ load }: DataSourcesApi) {
 
     return markdown(
       o?.skipFirstLine ? lines.split("\n").slice(1).join("\n") : lines,
+      filename,
     );
   }
 
