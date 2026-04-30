@@ -1,0 +1,31 @@
+diff --git a/routers/config-router/mod.js b/routers/config-router/mod.js
+index 0000000..0000000 100644
+--- a/routers/config-router/mod.js
++++ b/routers/config-router/mod.js
+@@ -89,6 +89,14 @@ async function expandRoute({ url, route, dataSources, recurse }) {
+     );
+     const { slug } = matchBy;
+     if (Array.isArray(indexResults)) {
++      const inheritedParentDataSources = {
++        ...route.parentDataSources,
++        ...await getDataSourceContext(
++          route.parentDataSources,
++          route.dataSources,
++          dataSources
++        )
++      };
+       const expandedRoutes = Object.fromEntries(
+         await Promise.all(indexResults.map(async (match) => {
+           const url2 = get(match, slug);
+@@ -105,7 +113,10 @@ async function expandRoute({ url, route, dataSources, recurse }) {
+             layout,
+             scripts,
+             context: context || {},
+-            parentDataSources: { [matchBy.name]: indexResults },
++            parentDataSources: {
++              ...inheritedParentDataSources,
++              [matchBy.name]: indexResults
++            },
+             dataSources: {
+               ...Object.fromEntries(
+                 // @ts-ignore route.expand exists by now for sure
