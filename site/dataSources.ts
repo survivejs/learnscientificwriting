@@ -559,9 +559,7 @@ function stripLatexComments(text: string) {
 }
 
 function normalizeLatexSource(text: string) {
-  return text
-    .replace(/^[ \t]*%(?:.*)(?:\r?\n|$)/gm, "")
-    .replace(/\\-/g, "");
+  return text.replace(/^[ \t]*%(?:.*)(?:\r?\n|$)/gm, "");
 }
 
 function stripFirstMarkdownHeading(text: string) {
