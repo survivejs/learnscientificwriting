@@ -6,6 +6,7 @@ import {
   el,
   htmlispToHTMLSync,
   lists,
+  parseBibtexCollection,
   parseLatex,
   refs,
   singles,
@@ -211,7 +212,7 @@ function init({ load }: DataSourcesApi) {
       "book/chapters/bibliography/english.bib",
     );
 
-    return parseBibtexEntries(bibtexText);
+    return parseBibtexCollection(bibtexText);
   }
 
   async function formatReferences() {
@@ -764,165 +765,6 @@ function formatAdjacentEntry(
       title: entry.title,
       slug: `/book/${entry.slug}/`,
     },
-  };
-}
-
-function parseBibtexEntries(input: string) {
-  const entries: Record<
-    string,
-    { type: string; id: string; fields: Record<string, string> }
-  > = {};
-  let index = 0;
-
-  while (index < input.length) {
-    const at = input.indexOf("@", index);
-
-    if (at < 0) {
-      break;
-    }
-
-    index = at + 1;
-
-    const typeStart = index;
-
-    while (index < input.length && /[A-Za-z]/.test(input[index])) {
-      index++;
-    }
-
-    const type = input.slice(typeStart, index).toUpperCase();
-
-    while (index < input.length && /\s/.test(input[index])) {
-      index++;
-    }
-
-    if (input[index] !== "{") {
-      continue;
-    }
-
-    index++;
-
-    const idStart = index;
-
-    while (index < input.length && input[index] !== ",") {
-      index++;
-    }
-
-    const id = input.slice(idStart, index).trim();
-
-    if (!id) {
-      continue;
-    }
-
-    index++;
-
-    const { fields, index: nextIndex } = parseBibtexFields(input, index);
-
-    entries[id] = { type, id, fields };
-    index = nextIndex;
-  }
-
-  return entries;
-}
-
-function parseBibtexFields(input: string, startIndex: number) {
-  const fields: Record<string, string> = {};
-  let index = startIndex;
-
-  while (index < input.length) {
-    while (index < input.length && /[\s,]/.test(input[index])) {
-      index++;
-    }
-
-    if (input[index] === "}") {
-      return { fields, index: index + 1 };
-    }
-
-    const keyStart = index;
-
-    while (index < input.length && /[A-Za-z0-9_-]/.test(input[index])) {
-      index++;
-    }
-
-    const key = input.slice(keyStart, index).toLowerCase();
-
-    while (index < input.length && /\s/.test(input[index])) {
-      index++;
-    }
-
-    if (!key || input[index] !== "=") {
-      index++;
-      continue;
-    }
-
-    index++;
-
-    while (index < input.length && /\s/.test(input[index])) {
-      index++;
-    }
-
-    const parsed = parseBibtexValue(input, index);
-
-    fields[key] = parsed.value;
-    index = parsed.index;
-  }
-
-  return { fields, index };
-}
-
-function parseBibtexValue(input: string, startIndex: number) {
-  const first = input[startIndex];
-
-  if (first === "{") {
-    return readBalancedBibtexValue(input, startIndex);
-  }
-
-  if (first === '"') {
-    return readQuotedBibtexValue(input, startIndex);
-  }
-
-  let index = startIndex;
-
-  while (index < input.length && input[index] !== "," && input[index] !== "}") {
-    index++;
-  }
-
-  return { value: input.slice(startIndex, index).trim(), index };
-}
-
-function readBalancedBibtexValue(input: string, startIndex: number) {
-  let index = startIndex + 1;
-  let depth = 1;
-
-  while (index < input.length && depth > 0) {
-    if (input[index] === "{") {
-      depth++;
-    } else if (input[index] === "}") {
-      depth--;
-    }
-
-    index++;
-  }
-
-  return {
-    value: input.slice(startIndex + 1, index - 1).trim(),
-    index,
-  };
-}
-
-function readQuotedBibtexValue(input: string, startIndex: number) {
-  let index = startIndex + 1;
-
-  while (index < input.length) {
-    if (input[index] === '"' && input[index - 1] !== "\\") {
-      break;
-    }
-
-    index++;
-  }
-
-  return {
-    value: input.slice(startIndex + 1, index).trim(),
-    index: index + 1,
   };
 }
 
