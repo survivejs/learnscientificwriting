@@ -10,12 +10,12 @@
       <a
         &href="(get props href)"
         &class="(concat
-          'group grid grid-cols-[2rem_minmax(0,1fr)] border-l-2 border-transparent py-1 pl-3 leading-snug text-muted hover:border-slate-400 hover:text-slate-950 dark:text-[#8fb9b9] dark:hover:border-[#d9cdb8]/50 dark:hover:text-[#f7ead0]'
+          'group flex gap-2 border-l-2 border-transparent py-1 pl-3 leading-snug text-muted hover:border-slate-400 hover:text-slate-950 dark:text-[#8fb9b9] dark:hover:border-[#d9cdb8]/50 dark:hover:text-[#f7ead0]'
           ' '
           (pick (equals (trim (get props href) /) (trim (get context url) /)) 'border-warning text-slate-950 font-medium dark:border-warning dark:text-[#f7ead0]')
         )"
       >
-        <span class="font-mono text-xs tabular-nums opacity-70" &children="(get props number)" />
+        <span class="w-5 shrink-0 font-mono text-xs tabular-nums opacity-70" &children="(get props number)" />
         <span &children="(get props title)" />
       </a>
     </li>
@@ -28,12 +28,12 @@
       <a
         &href="(get props href)"
         &class="(concat
-          'group grid grid-cols-[2rem_minmax(0,1fr)] border-l-2 border-transparent py-1 pl-3 leading-snug text-muted hover:border-slate-400 hover:text-slate-950 dark:text-[#8fb9b9] dark:hover:border-[#d9cdb8]/50 dark:hover:text-[#f7ead0]'
+          'group flex gap-2 border-l-2 border-transparent py-1 pl-3 leading-snug text-muted hover:border-slate-400 hover:text-slate-950 dark:text-[#8fb9b9] dark:hover:border-[#d9cdb8]/50 dark:hover:text-[#f7ead0]'
           ' '
           (pick (equals (trim (get props href) /) (trim (get context url) /)) 'border-warning text-slate-950 font-medium dark:border-warning dark:text-[#f7ead0]')
         )"
       >
-        <span class="font-mono text-xs tabular-nums opacity-70" &children="(get props number)" />
+        <span class="w-5 shrink-0 font-mono text-xs tabular-nums opacity-70" &children="(get props number)" />
         <span &children="(get props title)" />
       </a>
     </li>
