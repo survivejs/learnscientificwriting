@@ -292,7 +292,6 @@ function init({ load }: DataSourcesApi) {
     const parser = {
       blocks: environments,
       doubles,
-      // TODO: Connect refs here
       singles: {
         ...singles,
         ...cites(bibtex),
