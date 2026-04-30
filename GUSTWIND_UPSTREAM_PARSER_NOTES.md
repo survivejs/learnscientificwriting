@@ -1,5 +1,28 @@
 # Gustwind parser notes
 
+## `\-` should parse as a discretionary hyphen, not an unknown command
+
+Patch: `patches/gustwind-upstream-discretionary-hyphen.patch`
+
+LaTeX uses `\-` to mark an optional hyphenation point. In prose, it should not
+emit a literal hyphen or stop parsing the current content run.
+
+The local workaround currently strips `\-` before calling Gustwind's LaTeX
+parser. This behavior belongs in the parser instead so consumers do not have to
+pre-normalize otherwise valid LaTeX source.
+
+Example:
+
+```tex
+dis\-cretionary
+```
+
+Expected parsed text:
+
+```txt
+discretionary
+```
+
 ## `\nameref{...}` needs section-label index data
 
 The raw-id rendering we saw:

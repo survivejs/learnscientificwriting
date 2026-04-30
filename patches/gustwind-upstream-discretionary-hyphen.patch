@@ -1,0 +1,17 @@
+diff --git a/htmlisp/parsers/latex/parsers/content.ts b/htmlisp/parsers/latex/parsers/content.ts
+index 0000000..0000000 100644
+--- a/htmlisp/parsers/latex/parsers/content.ts
++++ b/htmlisp/parsers/latex/parsers/content.ts
+@@ -23,6 +23,9 @@ export function getParseContent(
+      if (c === "\n" && getCharacter.get() === "\n") {
+        break;
+      } else if (c === "\\" && getCharacter.get() === "%") {
+        stringBuffer += "%";
+        getCharacter.next();
++      } else if (c === "\\" && getCharacter.get() === "-") {
++        // LaTeX discretionary hyphen. It only marks a possible break point.
++        getCharacter.next();
+      } else if (c === "\\" && !foundComment) {
+        parts.push(stringBuffer);
+        stringBuffer = "";
+        getCharacter.previous();

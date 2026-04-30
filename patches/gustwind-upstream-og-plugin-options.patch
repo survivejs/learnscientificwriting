@@ -1,0 +1,82 @@
+diff --git a/plugins/og/mod.ts b/plugins/og/mod.ts
+index 0000000..0000000 100644
+--- a/plugins/og/mod.ts
++++ b/plugins/og/mod.ts
+@@ -1,10 +1,21 @@
+ import * as path from "node:path";
+ import sharp from "sharp";
+ import { htmlispToHTML } from "../../htmlisp/mod.ts";
+ import type { Plugin } from "../../types.ts";
+ 
+ const encoder = new TextEncoder();
+ const toRecord = (value: unknown) =>
+   value && typeof value === "object" ? value as Record<string, unknown> : {};
++const defaultSkipExtensions = [".html", ".xml"];
++
++type OgPluginOptions = {
++  layout: string;
++  output?: string;
++  skipExtensions?: string[];
++};
+ 
+-export const plugin: Plugin = {
++export const plugin: Plugin<OgPluginOptions> = {
+   meta: {
+     name: "gustwind-og-plugin",
+     description: "${name} allows generating OpenGraph images for a website.",
+     dependsOn: ["htmlisp-renderer-plugin", "gustwind-meta-plugin"],
+   },
+-  init: async ({ options: { layout }, load, outputDirectory }) => {
++  init: async ({
++    options: {
++      layout,
++      output = "og.png",
++      skipExtensions = defaultSkipExtensions,
++    },
++    load,
++    outputDirectory,
++  }) => {
++    if (!layout) {
++      throw new Error("gustwind-og-plugin requires a layout option");
++    }
++
+     const ogLayout = await load.textFile(layout);
+ 
+     return {
+       beforeEachRender: async ({ url, context, send }) => {
+-        if (
+-          !url.endsWith(".html") && !url.endsWith(".html/") &&
+-          !url.endsWith(".xml") && !url.endsWith(".xml/")
+-        ) {
++        if (shouldRenderOg(url, skipExtensions)) {
+           const meta = toRecord(await send("gustwind-meta-plugin", {
+             type: "getMeta",
+             payload: undefined,
+@@ -34,7 +45,7 @@ export const plugin: Plugin = {
+             type: "writeFile",
+             payload: {
+               outputDirectory,
+-              file: path.join(url, "og.png"),
++              file: getOgOutputPath(url, output),
+               data,
+             },
+           }];
+@@ -45,3 +56,16 @@ export const plugin: Plugin = {
+     };
+   },
+ };
++
++function shouldRenderOg(url: string, skipExtensions: string[]) {
++  const normalizedUrl = url.replace(/\/+$/, "");
++
++  return !skipExtensions.some((extension) =>
++    normalizedUrl.endsWith(extension)
++  );
++}
++
++function getOgOutputPath(url: string, output: string) {
++  return path.posix.join(
++    url.replace(/^\/+|\/+$/g, ""),
++    output.replace(/^\/+/g, ""),
++  );
++}
