@@ -1,20 +1,36 @@
-<Heading level="2">Table of contents</Heading>
-<Heading level="3">Chapters</Heading>
-<ol class="flex flex-col gap-2" &foreach="(get context bookIndex.chapters)">
+<Heading class="font-serif text-3xl" level="2">Table of contents</Heading>
+<Heading class="mt-8 text-sm font-semibold uppercase tracking-wide text-muted" level="3"
+  >Chapters</Heading
+>
+<ol
+  class="not-prose mt-4 grid gap-3 md:grid-cols-2"
+  &foreach="(get context bookIndex.chapters)"
+>
   <li>
-    <div class="flex flex-col gap-1">
+    <div
+      class="border-l-4 border-secondary bg-white/70 p-3 shadow-sm transition hover:border-warning hover:bg-white"
+    >
       <SiteLink
+        class="font-medium text-slate-950 decoration-muted underline-offset-4"
         &href="(urlJoin (get props prefix) (get props slug) /)"
         &children="(get props title)"
       />
     </div>
   </li>
 </ol>
-<Heading level="3">Appendices</Heading>
-<ol class="flex flex-col gap-2" &foreach="(get context bookIndex.appendices)">
+<Heading class="mt-8 text-sm font-semibold uppercase tracking-wide text-muted" level="3"
+  >Appendices</Heading
+>
+<ol
+  class="not-prose mt-4 grid gap-3 md:grid-cols-2"
+  &foreach="(get context bookIndex.appendices)"
+>
   <li>
-    <div class="flex flex-col gap-1">
+    <div
+      class="border-l-4 border-muted/40 bg-white/70 p-3 shadow-sm transition hover:border-warning hover:bg-white"
+    >
       <SiteLink
+        class="font-medium text-slate-950 decoration-muted underline-offset-4"
         &href="(urlJoin (get props prefix) (get props slug) /)"
         &children="(get props title)"
       />

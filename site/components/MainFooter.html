@@ -1,28 +1,21 @@
-<footer class="py-8 font-light bg-primary">
-  <div class="flex flex-col container mx-auto gap-4">
-    <section
-      class="md:mx-auto px-4 sm:px-0 grid grid-rows-3 md:grid-rows-none md:grid-cols-3 gap-4 md:gap-8 w-full md:max-w-3xl"
-    >
-      <div class="flex flex-col">
-        <Heading level="2">About</Heading>
-        <div class="font-thin">
-          The purpose of this site is to support you in your academic publishing
-          efforts.
-        </div>
-      </div>
-      <div class="flex flex-col">
-        <Heading level="2">Credits</Heading>
-        <Markdown as="div" class="font-thin"
-          >The content of this site was developed by [Juho
-          Vepsäläinen](https://survivejs.com).
-        </Markdown>
-      </div>
-      <div class="flex flex-col">
-        <Heading level="2">Navigation</Heading>
-        <div class="font-thin flex flex-col">
-          <Navigation />
-        </div>
-      </div>
-    </section>
+<footer
+  class="border-t border-secondary/20 bg-[#fbfaf7]/90 py-8 text-sm text-muted"
+>
+  <div
+    class="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 md:px-0 lg:max-w-4xl lg:flex-row lg:items-center lg:justify-between"
+  >
+    <p class="max-w-xl">
+      Learn scientific writing is an open guide by
+      <a
+        class="font-medium text-slate-950 underline decoration-warning underline-offset-4"
+        href="https://survivejs.com"
+        >Juho Vepsäläinen</a
+      >.
+    </p>
+    <nav class="flex flex-wrap gap-2">
+      <Navigation
+        class="mr-6 text-muted decoration-warning underline-offset-4 last:mr-0 hover:text-slate-950"
+      />
+    </nav>
   </div>
 </footer>

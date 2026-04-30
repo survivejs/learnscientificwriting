@@ -9,8 +9,8 @@ export default {
     extend: {
       colors: meta.colors,
       fontFamily: {
-        // TODO: Update this
-        // "primary": 'system-ui, "Eau"',
+        serif: ["Georgia", "Cambria", "Times New Roman", "serif"],
+        sans: ["Avenir Next", "Segoe UI", "Helvetica Neue", "sans-serif"],
         "monospace": "monospace",
       },
     },

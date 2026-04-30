@@ -183,6 +183,24 @@ function init({ load }: DataSourcesApi) {
     return { chapters, appendices };
   }
 
+  async function indexBookSections(
+    entries: { title: string; slug: string; path: string }[],
+  ) {
+    const sections = await Promise.all(
+      entries.map(async (entry) => {
+        const text = await load.textFile(entry.path);
+
+        return parseSectionIndex(text).map((section) => ({
+          ...section,
+          path: entry.path,
+          slug: `/book/${entry.slug}/#${section.slug}`,
+        }));
+      }),
+    );
+
+    return sections.flat();
+  }
+
   async function loadBibtex() {
     const bibtexText = await load.textFile(
       "book/chapters/bibliography/english.bib",
@@ -202,6 +220,7 @@ function init({ load }: DataSourcesApi) {
       "./book/appendices.tex",
       { flatten: true },
     );
+    const refIndex = bookIndex.concat(await indexBookSections(bookIndex));
     const { previous, next } = getAdjacentEntries(bookIndex, path);
 
     // TODO: Pass book index here as well since that's needed for label linking
@@ -215,11 +234,22 @@ function init({ load }: DataSourcesApi) {
       blocks: environments,
       doubles,
       // TODO: Connect refs here
-      singles: {
-        ...singles,
-        ...cites(bibtex),
-        footnote: (children: HtmlispChild[]) => {
-          footnotes++;
+        singles: {
+          ...singles,
+          ...cites(bibtex),
+          citep: (children: HtmlispChild[]) => {
+            const ids = childrenToText(children).split(",").map((id) =>
+              id.trim()
+            ).filter(Boolean);
+
+            return {
+              type: "span",
+              attributes: { title: getCitationTitle(ids, bibtex) },
+              children: [`(${ids.map((id) => formatParentheticalCitation(id, bibtex)).join("; ")})`],
+            };
+          },
+          footnote: (children: HtmlispChild[]) => {
+            footnotes++;
 
           return {
             type: "sup",
@@ -227,7 +257,7 @@ function init({ load }: DataSourcesApi) {
             children: [footnotes.toString()],
           };
         },
-        ...getRefs(bookIndex),
+        ...getRefs(refIndex),
       },
     };
     const ast = parseLatex(chapterText, parser);
@@ -342,6 +372,52 @@ function sanitizeBibtexEntries(
   );
 }
 
+function formatParentheticalCitation(
+  id: string,
+  entries: Record<string, { fields?: Record<string, string> }>,
+) {
+  const entry = entries[id];
+
+  if (!entry) {
+    throw new Error(`No matching BibTeX entry was found for ${id}`);
+  }
+
+  const author = entry.fields?.author || "";
+  const authorCount = author.split(/\s+and\s+/i).filter(Boolean).length;
+  const surname = getFirstAuthorSurname(author);
+  const year = entry.fields?.year || "";
+  const authorText = authorCount > 1 ? `${surname} et al.` : surname;
+
+  return [authorText, year].filter(Boolean).join(", ");
+}
+
+function getCitationTitle(
+  ids: string[],
+  entries: Record<string, { fields?: Record<string, string> }>,
+) {
+  return ids.map((id) => {
+    const entry = entries[id];
+
+    if (!entry) {
+      throw new Error(`No matching BibTeX entry was found for ${id}`);
+    }
+
+    return [entry.fields?.title, entry.fields?.author].filter(Boolean).join(
+      " - ",
+    );
+  }).join(", ");
+}
+
+function getFirstAuthorSurname(author: string) {
+  const firstAuthor = author.split(/\s+and\s+/i)[0]?.trim() || "";
+
+  if (firstAuthor.includes(",")) {
+    return firstAuthor.split(",")[0].trim();
+  }
+
+  return firstAuthor.split(/\s+/).at(-1) || firstAuthor;
+}
+
 type HtmlispChild = string | {
   type: string;
   attributes?: Record<string, string>;
@@ -429,6 +505,30 @@ function parseBookIndex(text: string) {
     slug: slugs[i],
     path: `book/${paths[i]}.tex`,
   }));
+}
+
+function parseSectionIndex(text: string) {
+  const sectionPattern =
+    /\\(?:section|subsection|subsubsection)\{([^}]*)\}\s*(?:\\label\{([^}]*)\})?/g;
+  const sections: { title: string; label: string; slug: string }[] = [];
+  const foundIds: Record<string, number> = {};
+  let match;
+
+  while ((match = sectionPattern.exec(text))) {
+    const [, title, label] = match;
+
+    if (!label) {
+      continue;
+    }
+
+    sections.push({
+      title,
+      label,
+      slug: getUniqueSlug(title, foundIds),
+    });
+  }
+
+  return sections;
 }
 
 export { init };

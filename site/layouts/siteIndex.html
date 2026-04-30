@@ -1,18 +1,20 @@
 <BaseLayout>
   <slot name="content">
-    <header class="bg-primary border-b border-slate-200">
-      <div class="sm:mx-auto px-4 py-12 sm:py-16 max-w-3xl flex">
-        <div class="flex flex-col gap-6">
+    <header class="border-b border-secondary/20 bg-primary">
+      <div
+        class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end"
+      >
+        <div class="mx-auto flex max-w-3xl flex-col gap-6 text-center lg:mx-0 lg:text-left">
           <p class="text-sm font-semibold uppercase tracking-wide text-muted">
             A practical open book
           </p>
-          <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
+          <h1 class="font-serif text-5xl font-bold leading-tight md:text-7xl">
             <span>Learn scientific writing</span>
           </h1>
           <h2 class="max-w-2xl text-xl md:text-2xl font-extralight leading-relaxed">
             Your roadmap to impactful research articles
           </h2>
-          <div class="flex flex-col sm:flex-row gap-3 pt-2">
+          <div class="flex flex-col items-center gap-3 pt-2 sm:flex-row sm:justify-center lg:justify-start">
             <a
               class="inline-flex w-fit rounded bg-slate-950 px-5 py-3 font-semibold text-white no-underline hover:bg-muted"
               href="/book/"
@@ -25,10 +27,32 @@
             >
           </div>
         </div>
+        <div
+          class="hidden border-l-4 border-warning bg-[#fffaf0] p-6 shadow-[12px_12px_0_#12343b] lg:block"
+          aria-hidden="true"
+        >
+          <div class="mb-5 flex items-center justify-between text-xs uppercase tracking-wide text-muted">
+            <span>Draft margin</span>
+            <span>rev. 04</span>
+          </div>
+          <div class="space-y-4 font-serif text-lg leading-7 text-slate-900">
+            <p>
+              <span class="bg-warning/20 px-1">Claim</span> first, evidence
+              next.
+            </p>
+            <p class="border-l border-muted/30 pl-4 text-base">
+              A good paper shows how the reader should move from question to
+              method to result.
+            </p>
+            <p class="text-sm uppercase tracking-wide text-warning">
+              Revise for structure before style.
+            </p>
+          </div>
+        </div>
       </div>
     </header>
     <div
-      class="md:mx-auto my-10 px-4 md:px-0 w-full lg:max-w-3xl prose lg:prose-xl prose-slate prose-p:leading-8"
+      class="md:mx-auto my-12 px-4 md:px-0 w-full lg:max-w-3xl prose lg:prose-xl prose-slate prose-p:leading-8"
     >
       <section>
         <Heading class="sr-only" level="2">Description</Heading>
@@ -48,7 +72,7 @@
           manner or another.
         </Markdown>
       </section>
-      <section id="contents" class="mt-10 border-t border-slate-200 pt-8">
+      <section id="contents" class="mt-12 border-t-4 border-secondary pt-8">
         <BookTableOfContents prefix="/book/" />
       </section>
     </div>

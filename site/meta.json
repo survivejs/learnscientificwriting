@@ -3,9 +3,9 @@
   "siteName": "Learn scientific writing",
   "url": "https://learnscientificwriting.com",
   "colors": {
-    "primary": "#effdf6",
-    "muted": "#346065",
-    "warning": "#f08b3f",
-    "secondary": "#b6fff8"
+    "primary": "#f5ead8",
+    "muted": "#2f5d62",
+    "warning": "#b46b30",
+    "secondary": "#12343b"
   }
 }

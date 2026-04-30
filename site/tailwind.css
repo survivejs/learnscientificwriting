@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #fbfaf7;
+    background-image:
+      linear-gradient(rgba(18, 52, 59, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(18, 52, 59, 0.025) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  ::selection {
+    background: #f2c078;
+    color: #111827;
+  }
+}
