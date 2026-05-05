@@ -333,15 +333,12 @@ function init({ load }: DataSourcesApi) {
         ...singles,
         ...cites(bibtex),
         ...getLinkedCites(bibtex),
-        newline: () => " ",
         footnote: (children: HtmlispChild[]) => {
           footnotes++;
 
           return {
             type: "sup",
-            attributes: {
-              title: escapeAttribute(cleanLatexText(childrenToText(children))),
-            },
+            attributes: { title: escapeAttribute(childrenToText(children)) },
             children: [footnotes.toString()],
           };
         },
@@ -1062,14 +1059,6 @@ function childrenToText(children: HtmlispChild[]) {
   return children.map((child) =>
     typeof child === "string" ? child : childrenToText(child.children || [])
   ).join("");
-}
-
-function cleanLatexText(text: string) {
-  return text
-    .replace(/\\href\{([^}]*)\}\{([^}]*)\}/g, "$2")
-    .replace(/\\url\{([^}]*)\}/g, "$1")
-    .replace(/\\(?:cite|citep|citet|fullcite)\{([^}]*)\}/g, "$1")
-    .replace(/\\[A-Za-z]+\{([^}]*)\}/g, "$1");
 }
 
 function escapeAttribute(value: string) {
