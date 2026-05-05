@@ -96,8 +96,8 @@ function parseUntilEndEnvironment(environment: string) {
 }
 
 function parseTable(input: string) {
-  const caption = input.match(/\\caption\{([^}]*)\}/)?.[1];
-  const label = input.match(/\\label\{([^}]*)\}/)?.[1];
+  const caption = getLatexCommandContent(input, "caption");
+  const label = getLatexCommandContent(input, "label");
   const tabular = input.match(
     /\\begin\{tabular\}[^\n]*\n([\s\S]*?)\\end\{tabular\}/,
   )?.[1];
@@ -167,6 +167,39 @@ function parseTable(input: string) {
 
 function normalizeTableCell(cell: string) {
   return cell.trim().replace(/\s*\\newline\s*/g, " ");
+}
+
+function getLatexCommandContent(input: string, command: string) {
+  const commandStart = input.indexOf(`\\${command}{`);
+
+  if (commandStart < 0) {
+    return;
+  }
+
+  const contentStart = commandStart + command.length + 2;
+  let depth = 1;
+
+  for (let index = contentStart; index < input.length; index++) {
+    const character = input[index];
+
+    if (character === "\\" && input[index + 1]) {
+      index++;
+      continue;
+    }
+
+    if (character === "{") {
+      depth++;
+      continue;
+    }
+
+    if (character === "}") {
+      depth--;
+
+      if (depth === 0) {
+        return input.slice(contentStart, index);
+      }
+    }
+  }
 }
 
 function init({ load }: DataSourcesApi) {
@@ -306,7 +339,9 @@ function init({ load }: DataSourcesApi) {
 
           return {
             type: "sup",
-            attributes: { title: escapeAttribute(childrenToText(children)) },
+            attributes: {
+              title: escapeAttribute(cleanLatexText(childrenToText(children))),
+            },
             children: [footnotes.toString()],
           };
         },
@@ -1027,6 +1062,14 @@ function childrenToText(children: HtmlispChild[]) {
   return children.map((child) =>
     typeof child === "string" ? child : childrenToText(child.children || [])
   ).join("");
+}
+
+function cleanLatexText(text: string) {
+  return text
+    .replace(/\\href\{([^}]*)\}\{([^}]*)\}/g, "$2")
+    .replace(/\\url\{([^}]*)\}/g, "$1")
+    .replace(/\\(?:cite|citep|citet|fullcite)\{([^}]*)\}/g, "$1")
+    .replace(/\\[A-Za-z]+\{([^}]*)\}/g, "$1");
 }
 
 function escapeAttribute(value: string) {
