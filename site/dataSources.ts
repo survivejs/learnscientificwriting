@@ -115,7 +115,7 @@ function parseTable(input: string) {
     .split(/\\\\/)
     .map((row) => row.trim())
     .filter(Boolean)
-    .map((row) => row.split("&").map((cell) => cell.trim()));
+    .map((row) => row.split("&").map(normalizeTableCell));
   const [headings = [], ...bodyRows] = rows;
 
   return {
@@ -163,6 +163,10 @@ function parseTable(input: string) {
         : []),
     ],
   };
+}
+
+function normalizeTableCell(cell: string) {
+  return cell.trim().replace(/\s*\\newline\s*/g, " ");
 }
 
 function init({ load }: DataSourcesApi) {
@@ -296,6 +300,7 @@ function init({ load }: DataSourcesApi) {
         ...singles,
         ...cites(bibtex),
         ...getLinkedCites(bibtex),
+        newline: () => " ",
         footnote: (children: HtmlispChild[]) => {
           footnotes++;
 
