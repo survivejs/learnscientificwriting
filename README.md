@@ -10,4 +10,4 @@ The book source lives in `content/book`. Its route metadata is defined in
 `content/book/index.json`, and [the Markdown syntax reference](content/book/SYNTAX.md)
 documents the extensions used for citations and cross-references.
 
-To deploy as a Cloudflare Worker, run `npm run deploy`. The Worker build uses `npm run worker:build`, which generates the static Gustwind build and bundles the source content needed by the Worker renderer.
+To deploy the precompiled site as Cloudflare static assets, run `npm run deploy`.

@@ -3,10 +3,7 @@
   "scripts": {
     "build": "gustwind --build --output ./build --no-incremental",
     "test": "node --test --test-concurrency=1",
-    "worker:prepare": "node scripts/generate-worker-manifest.mjs",
-    "worker:build": "npm run build && npm run worker:prepare",
-    "worker:dev": "npm run worker:build && wrangler dev",
-    "deploy": "npm run worker:build && wrangler deploy",
+    "deploy": "npm run build && wrangler deploy",
     "start": "gustwind --develop --port 3000",
     "serve": "gustwind --serve --port 3000 --input ./build",
     "content:todos": "node scripts/report-content-todos.mjs",
@@ -16,7 +13,6 @@
     "node": "24.x"
   },
   "dependencies": {
-    "@bruits/satteri-wasm32-wasi": "0.9.5",
     "@tailwindcss/typography": "0.5.20",
     "gustwind": "0.180.0",
     "satteri": "0.9.5"
