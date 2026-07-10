@@ -22,6 +22,6 @@
     "gustwind": "0.111.0"
   },
   "devDependencies": {
-    "wrangler": "4.86.0"
+    "wrangler": "4.110.0"
   }
 }
