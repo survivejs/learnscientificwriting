@@ -7,7 +7,7 @@ This project uses Node.js 24. Version managers can read the pinned version from 
 To get started, run `npm install` and then `npm run start` to run the development server. To generate a build, use `npm run build`.
 
 The book source lives in `content/book`. Its route metadata is defined in
-`content/book/index.json`, and `content/book/README.md` documents the Markdown
-extensions used for citations and cross-references.
+`content/book/index.json`, and [the Markdown syntax reference](content/book/SYNTAX.md)
+documents the extensions used for citations and cross-references.
 
 To deploy as a Cloudflare Worker, run `npm run deploy`. The Worker build uses `npm run worker:build`, which generates the static Gustwind build and bundles the source content needed by the Worker renderer.
