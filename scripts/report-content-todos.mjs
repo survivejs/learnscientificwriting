@@ -1,14 +1,14 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const roots = ["book"];
+const roots = ["content/book"];
 const todoPattern = /\bTODO\b(?::\s*)?(.*)/i;
 const ignoredDirectories = new Set([".git", "node_modules"]);
 
 const files = [];
 
 for (const root of roots) {
-  await collectTexFiles(root, files);
+  await collectContentFiles(root, files);
 }
 
 const findings = [];
@@ -41,7 +41,7 @@ for (const finding of findings) {
   console.log(`${finding.file}:${finding.line}: ${finding.text}`);
 }
 
-async function collectTexFiles(directory, output) {
+async function collectContentFiles(directory, output) {
   const entries = await readdir(directory, { withFileTypes: true });
 
   for (const entry of entries) {
@@ -49,9 +49,9 @@ async function collectTexFiles(directory, output) {
 
     if (entry.isDirectory()) {
       if (!ignoredDirectories.has(entry.name)) {
-        await collectTexFiles(path, output);
+        await collectContentFiles(path, output);
       }
-    } else if (entry.isFile() && entry.name.endsWith(".tex")) {
+    } else if (entry.isFile() && entry.name.endsWith(".md")) {
       output.push(path);
     }
   }

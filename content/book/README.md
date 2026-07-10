@@ -1,0 +1,57 @@
+# Book Markdown syntax
+
+Book chapters use standard Markdown wherever possible. Book-specific semantics
+use Satteri text directives so they remain structured and build-time validated.
+Chapter titles, ordering, routes, and top-level reference labels are defined in
+`content/book/index.json`.
+
+## Headings and references
+
+The page layout supplies the chapter title, so chapter files begin at level two.
+Add an explicit id to every heading that may be referenced.
+
+```markdown
+## Why citing matters {#sec-citing-accuracy}
+
+See :ref[sec-citing-accuracy].
+See :ref[sec-citing-accuracy]{text="the earlier discussion"}.
+See :ref[the LaTeX section]{target="sec:citing-in-latex"}.
+```
+
+Use `target` when referencing a legacy LaTeX label containing a colon. The
+bracket text becomes the link text in that form.
+
+Non-heading targets such as tables use a block anchor:
+
+```markdown
+::anchor[Table]{target="table:methods"}
+```
+
+When a stable reference label differs from a public heading anchor, declare an
+alias immediately before the heading:
+
+```markdown
+::alias[Citing in LaTeX]{target="sec:citing-in-latex" slug="cite-in-latex"}
+
+## Citing in LaTeX
+```
+
+## Citations
+
+Citation ids refer to entries in `content/book/bibliography.bib`.
+Parenthetical citations are the default.
+
+```markdown
+:cite[source-id]
+:cite[source-id]{mode=textual}
+:cite[source-a, source-b]
+:cite[source-id]{locator="p. 42"}
+:cite[source-id]{mode=full}
+```
+
+Optional `prefix` and `suffix` attributes add text around a rendered citation.
+
+## Standard Markdown
+
+Use standard Markdown links, images, tables, code blocks, and GFM footnotes.
+Do not add raw HTML for citations or cross-references.

@@ -5,18 +5,11 @@ const root = process.cwd();
 const outputPath = path.join(root, "worker/generated/site-manifest.js");
 
 const componentRoots = ["site/components", "site/layouts"];
-const textRoots = ["book"];
+const textRoots = ["content/book"];
 const textExtensions = new Set([
   ".bib",
-  ".cfg",
-  ".css",
-  ".html",
   ".json",
   ".md",
-  ".tex",
-  ".txt",
-  ".xhtml",
-  ".xml",
 ]);
 
 const components = {};

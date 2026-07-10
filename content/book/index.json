@@ -1,0 +1,126 @@
+{
+  "chapters": [
+    {
+      "title": "Introduction",
+      "label": "ch:introduction",
+      "slug": "introduction",
+      "path": "content/book/01-introduction.md",
+      "order": 1,
+      "kind": "chapter"
+    },
+    {
+      "title": "What is scientific writing",
+      "label": "ch:what-is-scientific-writing",
+      "slug": "what-is-scientific-writing",
+      "path": "content/book/02-what-is-scientific-writing.md",
+      "order": 2,
+      "kind": "chapter"
+    },
+    {
+      "title": "Research question",
+      "label": "ch:research-question",
+      "slug": "research-question",
+      "path": "content/book/03-research-question.md",
+      "order": 3,
+      "kind": "chapter"
+    },
+    {
+      "title": "Elements of a paper",
+      "label": "ch:elements",
+      "slug": "elements",
+      "path": "content/book/04-elements.md",
+      "order": 4,
+      "kind": "chapter"
+    },
+    {
+      "title": "Paragraphs",
+      "label": "ch:paragraphs",
+      "slug": "paragraphs",
+      "path": "content/book/05-paragraphs.md",
+      "order": 5,
+      "kind": "chapter"
+    },
+    {
+      "title": "Accessibility",
+      "label": "ch:accessibility",
+      "slug": "accessibility",
+      "path": "content/book/06-accessibility.md",
+      "order": 6,
+      "kind": "chapter"
+    },
+    {
+      "title": "Citing",
+      "label": "ch:citing",
+      "slug": "citing",
+      "path": "content/book/07-citing.md",
+      "order": 7,
+      "kind": "chapter"
+    },
+    {
+      "title": "Process",
+      "label": "ch:process",
+      "slug": "process",
+      "path": "content/book/08-process.md",
+      "order": 8,
+      "kind": "chapter"
+    },
+    {
+      "title": "Editing",
+      "label": "ch:editing",
+      "slug": "editing",
+      "path": "content/book/09-editing.md",
+      "order": 9,
+      "kind": "chapter"
+    },
+    {
+      "title": "Troubleshooting",
+      "label": "ch:troubleshooting",
+      "slug": "troubleshooting",
+      "path": "content/book/10-troubleshooting.md",
+      "order": 10,
+      "kind": "chapter"
+    },
+    {
+      "title": "Technology",
+      "label": "ch:technology",
+      "slug": "technology",
+      "path": "content/book/11-technology.md",
+      "order": 11,
+      "kind": "chapter"
+    },
+    {
+      "title": "Publishing",
+      "label": "ch:publishing",
+      "slug": "publishing",
+      "path": "content/book/12-publishing.md",
+      "order": 12,
+      "kind": "chapter"
+    },
+    {
+      "title": "Popularizing results",
+      "label": "ch:popularizing",
+      "slug": "popularizing",
+      "path": "content/book/13-popularizing.md",
+      "order": 13,
+      "kind": "chapter"
+    },
+    {
+      "title": "Further resources",
+      "label": "ch:resources",
+      "slug": "further-resources",
+      "path": "content/book/14-further-resources.md",
+      "order": 14,
+      "kind": "chapter"
+    }
+  ],
+  "appendices": [
+    {
+      "title": "Getting started with LaTeX",
+      "label": "ap:latex",
+      "slug": "latex",
+      "path": "content/book/15-latex.md",
+      "order": 1,
+      "kind": "appendix"
+    }
+  ]
+}

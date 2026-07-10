@@ -3,7 +3,7 @@ import meta from "./meta.json" with { type: "json" };
 
 export default {
   darkMode: "selector",
-  content: ["./site/**/*.{html,ts}", "./book/**/*.{md,tex}"],
+  content: ["./site/**/*.{html,ts}", "./content/book/**/*.md"],
   theme: {
     extend: {
       colors: meta.colors,

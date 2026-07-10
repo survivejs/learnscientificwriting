@@ -11,8 +11,7 @@
     },
     "dataSources": {
       "bookIndex": {
-        "operation": "indexBook",
-        "parameters": ["./book/chapters.tex", "./book/appendices.tex"]
+        "operation": "indexBook"
       }
     },
     "scripts": [{ "name": "theme-toggle" }]
@@ -29,8 +28,7 @@
     },
     "dataSources": {
       "bookIndex": {
-        "operation": "indexBook",
-        "parameters": ["./book/chapters.tex", "./book/appendices.tex"]
+        "operation": "indexBook"
       },
       "bibtex": {
         "operation": "loadBibtex"
@@ -60,11 +58,7 @@
         "name": "chapters",
         "indexer": {
           "operation": "indexBook",
-          "parameters": [
-            "./book/chapters.tex",
-            "./book/appendices.tex",
-            { "flatten": true }
-          ]
+          "parameters": [{ "flatten": true }]
         },
         "slug": "slug"
       },
