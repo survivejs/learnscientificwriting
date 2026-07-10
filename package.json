@@ -18,13 +18,10 @@
     "node": "24.x"
   },
   "dependencies": {
-    "@tailwindcss/typography": "0.5.19",
-    "gustwind": "0.160.0"
+    "@tailwindcss/typography": "0.5.20",
+    "gustwind": "0.170.0"
   },
   "devDependencies": {
     "wrangler": "4.110.0"
-  },
-  "overrides": {
-    "vite": "8.1.4"
   }
 }
