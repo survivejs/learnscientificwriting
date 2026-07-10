@@ -13,6 +13,10 @@ test("the complete book is rendered from Markdown with resolved semantics", () =
     "build/book/introduction/index.html",
     "utf8",
   );
+  const stylesheet = readFileSync(
+    `build/${html.match(/href="\/(tailwind-[^"]+\.css)"/)?.[1]}`,
+    "utf8",
+  );
 
   assert.equal(entries.length, 15);
 
@@ -46,6 +50,9 @@ test("the complete book is rendered from Markdown with resolved semantics", () =
   assert.doesNotMatch(html, /:cite|:ref|\\(?:cite|section|nameref)/);
   assert.doesNotMatch(html, /class="[^"]*" class="[^"]*"/);
   assert.match(introduction, /href="\/book\/elements\/"/);
+  assert.match(stylesheet, /\.prose-a\\:hover\\:text-slate-950/);
+  assert.doesNotMatch(stylesheet, /\.hover\\:prose-a\\:/);
+  assert.doesNotMatch(stylesheet, /\.dark\\:hover\\:prose-a\\:/);
   assert.match(
     readFileSync("build/book/elements/index.html", "utf8"),
     /id="table-ilmrad"/,
