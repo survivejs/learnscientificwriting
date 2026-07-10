@@ -4,7 +4,7 @@
     "bootstrap": "bash scripts/bootstrap.sh",
     "fetch:book-repository": "bash scripts/fetch-book.sh",
     "build": "gustwind --build --output ./build --no-incremental",
-    "test": "node --test",
+    "test": "node --test --test-concurrency=1",
     "worker:prepare": "node scripts/generate-worker-manifest.mjs",
     "worker:build": "npm run bootstrap && npm run build && npm run worker:prepare",
     "worker:dev": "npm run worker:build && wrangler dev",
@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@tailwindcss/typography": "0.5.19",
-    "gustwind": "0.111.0"
+    "gustwind": "0.160.0"
   },
   "devDependencies": {
     "wrangler": "4.110.0"
