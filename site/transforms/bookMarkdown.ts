@@ -50,6 +50,8 @@ async function transformBookMarkdown(
 ) {
   const tableOfContents: TableOfContentsEntry[] = [];
   const sections: SectionEntry[] = [];
+  const aliasSections: SectionEntry[] = [];
+  const matchedAliases = new Set<SectionEntry>();
   const citationIds = new Set<string>();
   const foundIds: Record<string, number> = {};
   const headingNumbers = { h2: 0, h3: 0, h4: 0 };
@@ -125,7 +127,13 @@ async function transformBookMarkdown(
 
       const slug = attributeValue(node.attributes?.slug) || slugify(target);
 
-      sections.push({ label: target, slug, title });
+      const section = { label: target, slug, title };
+
+      sections.push(section);
+
+      if (node.name === "alias") {
+        aliasSections.push(section);
+      }
 
       return {
         type: "html",
@@ -148,6 +156,17 @@ async function transformBookMarkdown(
         filter: ["h2", "h3", "h4"],
         visit(node, context) {
           const raw = context.textContent(node);
+
+          if (node.tagName === "h4") {
+            context.replaceNode(node, {
+              type: "element",
+              tagName: "b",
+              properties: {},
+              children: node.children,
+            });
+            return;
+          }
+
           const explicitId = typeof node.properties?.id === "string"
             ? node.properties.id
             : undefined;
@@ -163,6 +182,14 @@ async function transformBookMarkdown(
             chapterNumber,
           );
           const text = [number, raw].filter(Boolean).join(" ");
+          const matchingAliases = aliasSections.filter((section) =>
+            section.slug === slug
+          );
+
+          for (const matchingAlias of matchingAliases) {
+            matchingAlias.title = text;
+            matchedAliases.add(matchingAlias);
+          }
 
           context.setProperty(node, "id", slug);
 
@@ -175,14 +202,12 @@ async function transformBookMarkdown(
             });
           }
 
-          if (node.tagName !== "h4") {
-            tableOfContents.push({
-              slug,
-              level: Number(node.tagName.slice(1)),
-              raw: text,
-              text,
-            });
-          }
+          tableOfContents.push({
+            slug,
+            level: Number(node.tagName.slice(1)),
+            raw: text,
+            text,
+          });
 
           if (explicitId) {
             sections.push({ title: text, label: explicitId, slug });
@@ -224,6 +249,16 @@ async function transformBookMarkdown(
     mdastPlugins: [semantics],
     hastPlugins: [structure],
   });
+
+  const unmatchedAlias = aliasSections.find((section) =>
+    !matchedAliases.has(section)
+  );
+
+  if (unmatchedAlias) {
+    throw new Error(
+      `${sourcePath}: alias "${unmatchedAlias.label}" does not match heading slug "${unmatchedAlias.slug}"`,
+    );
+  }
 
   return {
     citationIds: Array.from(citationIds),

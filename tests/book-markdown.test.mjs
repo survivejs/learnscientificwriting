@@ -9,6 +9,12 @@ test("book Markdown renders and indexes semantic directives", async () => {
     [
       "## Referencing {#sec-referencing}",
       "",
+      "::alias[Aliased section]{target=\"sec:alias\" slug=\"aliased-section\"}",
+      "",
+      "## Aliased section",
+      "",
+      "#### Paragraph label",
+      "",
       "See :ref[the other section]{target=\"sec:other\"} and " +
       ":cite[source-a, source-b]{mode=textual locator=\"p. 4\"}.",
       "",
@@ -45,6 +51,11 @@ test("book Markdown renders and indexes semantic directives", async () => {
   assert.deepEqual(result.citationIds, ["source-a", "source-b"]);
   assert.deepEqual(result.sections, [
     {
+      label: "sec:alias",
+      slug: "aliased-section",
+      title: "7.2 Aliased section",
+    },
+    {
       label: "table:demo",
       slug: "table-demo",
       title: "Table",
@@ -60,11 +71,22 @@ test("book Markdown renders and indexes semantic directives", async () => {
     raw: "7.1 Referencing",
     slug: "sec-referencing",
     text: "7.1 Referencing",
+  }, {
+    level: 2,
+    raw: "7.2 Aliased section",
+    slug: "aliased-section",
+    text: "7.2 Aliased section",
   }]);
   assert.match(
     result.content,
     /<h2 id="sec-referencing"><span class="text-muted">7\.1 <\/span>Referencing<\/h2>/,
   );
+  assert.match(
+    result.content,
+    /<h2 id="aliased-section"><span class="text-muted">7\.2 <\/span>Aliased section<\/h2>/,
+  );
+  assert.match(result.content, /<b>Paragraph label<\/b>/);
+  assert.doesNotMatch(result.content, /7\.2\.0\.1/);
   assert.match(result.content, /data-citation/);
   assert.doesNotMatch(result.content, /<p>See <p>/);
   assert.doesNotMatch(result.content, /class="[^"]*" class="[^"]*"/);
@@ -84,5 +106,11 @@ test("book Markdown rejects unsupported semantic syntax", async () => {
   await assert.rejects(
     transformBookMarkdown("::unknown[value]"),
     /unsupported leaf directive "::unknown"/,
+  );
+  await assert.rejects(
+    transformBookMarkdown(
+      "::alias[Missing heading]{target=\"sec:missing\" slug=\"missing-heading\"}",
+    ),
+    /alias "sec:missing" does not match heading slug "missing-heading"/,
   );
 });

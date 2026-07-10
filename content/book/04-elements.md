@@ -31,7 +31,7 @@ In addition to the standard ILMRaD structure, I also include a Conclusion chapte
 The general rule for structuring is that you approach the topic from an abstract angle to motivate the work and bring the reader to the problem in the Introduction, which you then study through a method before starting to go from concrete to abstract again through Discussion, and finally Conclusion.
 To give you a better idea of each possible chapter, I have condensed them to the :ref[]{target="table:ilmrad"} below.
 
-::anchor[Table]{target="table:ilmrad"}
+::anchor[table]{target="table:ilmrad"}
 
 | Chapter | Purpose | Writing approach |
 | --- | --- | --- |

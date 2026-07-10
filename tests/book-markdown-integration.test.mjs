@@ -34,10 +34,14 @@ test("the complete book is rendered from Markdown with resolved semantics", () =
 
   assert.match(
     html,
-    /<h2 id="sec-citing-accuracy"><span class="text-muted">7\.1 <\/span>Why citing accurately matters<\/h2>/,
+    /<h2 id="why-citing-accurately-matters"><span class="text-muted">7\.1 <\/span>Why citing accurately matters<\/h2>/,
   );
   assert.match(html, /href="\/book\/references\/#vepsalainen2023implications"/);
-  assert.match(html, /href="\/book\/latex\/#cite-in-latex"/);
+  assert.match(
+    html,
+    /href="\/book\/latex\/#cite-in-latex">A\.5 Cite in LaTeX<\/a>/,
+  );
+  assert.doesNotMatch(html, /<h4|7\.2\.0\./);
   assert.match(html, /<section data-footnotes class="footnotes">/);
   assert.doesNotMatch(html, /:cite|:ref|\\(?:cite|section|nameref)/);
   assert.doesNotMatch(html, /class="[^"]*" class="[^"]*"/);
