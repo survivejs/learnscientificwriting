@@ -16,6 +16,7 @@
     "node": "24.x"
   },
   "dependencies": {
+    "@bruits/satteri-wasm32-wasi": "0.9.5",
     "@tailwindcss/typography": "0.5.20",
     "gustwind": "0.180.0",
     "satteri": "0.9.5"
