@@ -192,6 +192,11 @@ async function transformBookMarkdown(
           }
 
           context.setProperty(node, "id", slug);
+          context.setProperty(
+            node,
+            "class",
+            "group scroll-mt-24",
+          );
 
           if (number) {
             context.prependChild(node, {
@@ -201,6 +206,19 @@ async function transformBookMarkdown(
               children: [{ type: "text", value: `${number} ` }],
             });
           }
+
+          context.appendChild(node, {
+            type: "element",
+            tagName: "a",
+            properties: {
+              href: `#${slug}`,
+              class:
+                "ml-2 inline-block font-sans text-[0.75em] font-normal no-underline text-muted/70 opacity-70 transition-opacity hover:text-slate-950 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-warning focus-visible:ring-offset-2 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 dark:text-[#8fb9b9] dark:hover:text-[#f7ead0] print:hidden",
+              "aria-label": `Link to ${raw}`,
+              title: "Link to this section",
+            },
+            children: [{ type: "text", value: "#" }],
+          });
 
           tableOfContents.push({
             slug,
@@ -228,6 +246,10 @@ async function transformBookMarkdown(
               Object.hasOwn(node.properties, "className")
             ? "className"
             : "class";
+
+          if (classes.includes("no-underline")) {
+            return;
+          }
 
           context.setProperty(
             node,

@@ -38,7 +38,7 @@ test("the complete book is rendered from Markdown with resolved semantics", () =
 
   assert.match(
     html,
-    /<h2 id="why-citing-accurately-matters"><span class="text-muted">7\.1 <\/span>Why citing accurately matters<\/h2>/,
+    /<h2 id="why-citing-accurately-matters" class="group scroll-mt-24"><span class="text-muted">7\.1 <\/span>Why citing accurately matters<a [^>]*href="#why-citing-accurately-matters"[^>]*>#<\/a><\/h2>/,
   );
   assert.match(html, /href="\/book\/references\/#vepsalainen2023implications"/);
   assert.match(

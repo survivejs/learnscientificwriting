@@ -79,11 +79,11 @@ test("book Markdown renders and indexes semantic directives", async () => {
   }]);
   assert.match(
     result.content,
-    /<h2 id="sec-referencing"><span class="text-muted">7\.1 <\/span>Referencing<\/h2>/,
+    /<h2 id="sec-referencing" class="group scroll-mt-24"><span class="text-muted">7\.1 <\/span>Referencing<a [^>]*href="#sec-referencing"[^>]*aria-label="Link to Referencing"[^>]*>#<\/a><\/h2>/,
   );
   assert.match(
     result.content,
-    /<h2 id="aliased-section"><span class="text-muted">7\.2 <\/span>Aliased section<\/h2>/,
+    /<h2 id="aliased-section" class="group scroll-mt-24"><span class="text-muted">7\.2 <\/span>Aliased section<a [^>]*href="#aliased-section"[^>]*>#<\/a><\/h2>/,
   );
   assert.match(result.content, /<b>Paragraph label<\/b>/);
   assert.doesNotMatch(result.content, /7\.2\.0\.1/);
