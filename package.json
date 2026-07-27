@@ -15,7 +15,8 @@
   "dependencies": {
     "@tailwindcss/typography": "0.5.20",
     "gustwind": "0.180.0",
-    "satteri": "0.9.5"
+    "satteri": "0.9.5",
+    "scholarmark": "0.3.0"
   },
   "devDependencies": {
     "wrangler": "4.110.0"
