@@ -1,10 +1,7 @@
 import { parseBibtexCollection } from "gustwind/htmlisp";
 import type { DataSourcesApi } from "gustwind";
+import type { ReferenceTarget } from "scholarmark";
 import transformBookMarkdown from "./transforms/bookMarkdown.ts";
-import type {
-  Citation as MarkdownCitation,
-  Reference as MarkdownReference,
-} from "./transforms/bookMarkdown.ts";
 import getMarkdown from "./transforms/markdown.ts";
 
 type BookSourceEntry = {
@@ -30,8 +27,6 @@ type BookIndexSource = {
   chapters: BookSourceEntry[];
   appendices: BookSourceEntry[];
 };
-
-type BibtexEntries = Record<string, { fields?: Record<string, string> }>;
 
 function init({ load }: DataSourcesApi) {
   const markdown = getMarkdown(load);
@@ -72,12 +67,15 @@ function init({ load }: DataSourcesApi) {
   async function indexBookSections(
     entries: { title: string; slug: string; path: string; number: string }[],
   ) {
+    const bibliographySource = await loadBibliographySource();
     const sections = await Promise.all(
       entries.map(async (entry) => {
         const text = await load.textFile(entry.path);
         const result = await transformBookMarkdown(text, {
+          bibliographySource,
           chapterNumber: entry.number,
           sourcePath: entry.path,
+          validateReferences: false,
         });
 
         return result.sections.map((section) => ({
@@ -92,9 +90,11 @@ function init({ load }: DataSourcesApi) {
   }
 
   async function loadBibtex() {
-    const bibtexText = await load.textFile("content/book/bibliography.bib");
+    return parseBibtexCollection(await loadBibliographySource());
+  }
 
-    return parseBibtexCollection(bibtexText);
+  async function loadBibliographySource() {
+    return load.textFile("content/book/bibliography.bib");
   }
 
   async function formatReferences() {
@@ -109,10 +109,13 @@ function init({ load }: DataSourcesApi) {
   }
 
   async function getUsedCitationIds(entries: { path: string }[]) {
+    const bibliographySource = await loadBibliographySource();
     const citations = await Promise.all(
       entries.map(async ({ path }) =>
         (await transformBookMarkdown(await load.textFile(path), {
+          bibliographySource,
           sourcePath: path,
+          validateReferences: false,
         })).citationIds
       ),
     );
@@ -124,7 +127,6 @@ function init({ load }: DataSourcesApi) {
     this: {
       parentDataSources?: {
         bookIndex?: BookIndex | BookEntry[];
-        bibtex?: BibtexEntries;
       };
     },
     { path, title }: { path: string; title: string },
@@ -138,17 +140,16 @@ function init({ load }: DataSourcesApi) {
     const refIndex = bookIndex.concat(await indexBookSections(bookIndex));
     const currentEntry = bookIndex.find((entry) => entry.path === path);
     const { previous, next } = getAdjacentEntries(bookIndex, path);
-    const bibtex = this?.parentDataSources?.bibtex || await loadBibtex();
+    const bibliographySource = await loadBibliographySource();
+    const referenceTargets = createReferenceTargets(refIndex);
 
     assertUniqueReferenceLabels(refIndex);
 
     const result = await transformBookMarkdown(await load.textFile(path), {
+      bibliographySource,
       chapterNumber: currentEntry?.number,
+      referenceTargets,
       sourcePath: path,
-      renderCitation: (citation) =>
-        renderMarkdownCitation(path, citation, bibtex),
-      renderReference: (reference) =>
-        renderMarkdownReference(path, reference, refIndex),
     });
 
     return {
@@ -184,62 +185,18 @@ function init({ load }: DataSourcesApi) {
   };
 }
 
-function renderMarkdownCitation(
-  path: string,
-  citation: MarkdownCitation,
-  entries: BibtexEntries,
-) {
-  const missingIds = citation.ids.filter((id) => !entries[id]);
-
-  if (missingIds.length) {
-    throw new Error(`${path}: missing citations: ${missingIds.join(", ")}`);
-  }
-
-  const formatter = citation.mode === "textual"
-    ? formatTextualCitation
-    : citation.mode === "full"
-    ? formatFullCitation
-    : formatParentheticalCitation;
-  const separator = citation.mode === "textual" ? ", " : "; ";
-  const rendered = citation.ids.map((id) => {
-    const entry = entries[id];
-
-    return `<a href="/book/references/#${escapeAttribute(id)}" title="${
-      escapeAttribute(formatReferenceTitle(id, entry))
-    }">${escapeHtml(formatter(id, entry))}</a>`;
-  }).join(separator);
-  const located = citation.locator
-    ? `${rendered}, ${escapeHtml(citation.locator)}`
-    : rendered;
-  const body = citation.mode === "parenthetical"
-    ? `(${located})`
-    : located;
-
-  return [
-    citation.prefix ? escapeHtml(citation.prefix) : "",
-    body,
-    citation.suffix ? escapeHtml(citation.suffix) : "",
-  ].join("");
-}
-
-function renderMarkdownReference(
-  path: string,
-  reference: MarkdownReference,
+function createReferenceTargets(
   entries: { title: string; label: string; slug: string }[],
 ) {
-  const entry = entries.find(({ label }) => label === reference.id);
-
-  if (!entry) {
-    throw new Error(`${path}: missing refs: ${reference.id}`);
-  }
-
-  const href = entry.slug.startsWith("/") || entry.slug.startsWith("#")
-    ? entry.slug
-    : `/book/${entry.slug}/`;
-
-  return `<a href="${escapeAttribute(href)}">${
-    escapeHtml(reference.text || entry.title)
-  }</a>`;
+  return new Map<string, ReferenceTarget>(entries.map((entry) => [
+    entry.label,
+    {
+      title: entry.title,
+      href: entry.slug.startsWith("/") || entry.slug.startsWith("#")
+        ? entry.slug
+        : `/book/${entry.slug}/`,
+    },
+  ]));
 }
 
 function assertUniqueReferenceLabels(entries: { label: string }[]) {
@@ -252,68 +209,6 @@ function assertUniqueReferenceLabels(entries: { label: string }[]) {
 
     labels.add(label);
   }
-}
-
-function formatParentheticalCitation(
-  id: string,
-  entry?: { fields?: Record<string, string> },
-) {
-  const fields = entry?.fields || {};
-
-  return `${formatCitationAuthors(fields.author || id)}, ${
-    fields.year || "n.d."
-  }`;
-}
-
-function formatTextualCitation(
-  id: string,
-  entry?: { fields?: Record<string, string> },
-) {
-  const fields = entry?.fields || {};
-
-  return `${formatCitationAuthors(fields.author || id)} (${
-    fields.year || "n.d."
-  })`;
-}
-
-function formatFullCitation(
-  id: string,
-  entry?: { fields?: Record<string, string> },
-) {
-  const reference = formatReference(id, entry || {});
-
-  return [
-    reference.authors,
-    `(${reference.year}).`,
-    `${reference.title}.`,
-    reference.source,
-  ].filter(Boolean).join(" ");
-}
-
-function formatCitationAuthors(author: string) {
-  const authors = splitAuthors(author).map((name) =>
-    getAuthorSurname(name) || name
-  );
-
-  if (authors.length <= 1) {
-    return authors[0] || author;
-  }
-  if (authors.length === 2) {
-    return `${authors[0]} & ${authors[1]}`;
-  }
-
-  return `${authors[0]} et al.`;
-}
-
-function formatReferenceTitle(
-  id: string,
-  entry?: { fields?: Record<string, string> },
-) {
-  const reference = formatReference(id, entry || {});
-
-  return [reference.authors, `(${reference.year}).`, reference.title]
-    .filter(Boolean)
-    .join(" ");
 }
 
 function formatReference(
@@ -382,14 +277,6 @@ function formatReferenceAuthor(author: string) {
   return [parts.at(-1), formatInitials(parts.slice(0, -1).join(" "))]
     .filter(Boolean)
     .join(", ");
-}
-
-function getAuthorSurname(author: string) {
-  const clean = cleanBibtexValue(author);
-
-  return clean.includes(",")
-    ? clean.split(",")[0].trim()
-    : clean.split(/\s+/).filter(Boolean).at(-1) || clean;
 }
 
 function splitAuthors(author: string) {
@@ -576,19 +463,6 @@ function stripFirstMarkdownHeading(text: string) {
   const [firstLine = "", ...rest] = text.split("\n");
 
   return /^#{1,6}\s+\S/.test(firstLine.trim()) ? rest.join("\n") : text;
-}
-
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-function escapeAttribute(value: string) {
-  return escapeHtml(value);
 }
 
 export { init };

@@ -3,53 +3,47 @@ import test from "node:test";
 import transformBookMarkdown from "../site/transforms/bookMarkdown.ts";
 
 test("book Markdown renders and indexes semantic directives", async () => {
-  const citations = [];
-  const references = [];
   const result = await transformBookMarkdown(
     [
-      "## Referencing {#sec-referencing}",
-      "",
-      "::alias[Aliased section]{target=\"sec:alias\" slug=\"aliased-section\"}",
+      "## Referencing",
+      "::label[sec-referencing]",
       "",
       "## Aliased section",
+      "::label[sec:alias]",
       "",
       "#### Paragraph label",
       "",
-      "See :ref[the other section]{target=\"sec:other\"} and " +
+      "See :ref[sec:other]{text=\"the other section\"} and " +
       ":cite[source-a, source-b]{mode=textual locator=\"p. 4\"}.",
       "",
       "A footnote.[^note]",
       "",
       "[^note]: Supporting detail.",
       "",
-      "::anchor[Table]{target=\"table:demo\"}",
+      "| Value |",
+      "| --- |",
+      "| 42 |",
+      "::label[table:demo]",
     ].join("\n"),
     {
+      bibliographySource: [
+        "@article{source-a, author={Doe, Jane}, title={Source A}, year={2024}}",
+        "@article{source-b, author={Smith, John}, title={Source B}, year={2025}}",
+      ].join("\n"),
       chapterNumber: "7",
-      renderCitation(citation) {
-        citations.push(citation);
-        return "<span data-citation>citation</span>";
-      },
-      renderReference(reference) {
-        references.push(reference);
-        return "<a href=\"/target/\">the other section</a>";
-      },
+      referenceTargets: new Map([
+        ["sec:other", { title: "Other section", href: "/target/" }],
+      ]),
     },
   );
 
-  assert.deepEqual(citations, [{
-    ids: ["source-a", "source-b"],
-    mode: "textual",
-    locator: "p. 4",
-    prefix: undefined,
-    suffix: undefined,
-  }]);
-  assert.deepEqual(references, [{
-    id: "sec:other",
-    text: "the other section",
-  }]);
   assert.deepEqual(result.citationIds, ["source-a", "source-b"]);
   assert.deepEqual(result.sections, [
+    {
+      label: "sec-referencing",
+      slug: "referencing",
+      title: "7.1 Referencing",
+    },
     {
       label: "sec:alias",
       slug: "aliased-section",
@@ -58,18 +52,13 @@ test("book Markdown renders and indexes semantic directives", async () => {
     {
       label: "table:demo",
       slug: "table-demo",
-      title: "Table",
-    },
-    {
-      label: "sec-referencing",
-      slug: "sec-referencing",
-      title: "7.1 Referencing",
+      title: "table:demo",
     },
   ]);
   assert.deepEqual(result.tableOfContents, [{
     level: 2,
     raw: "7.1 Referencing",
-    slug: "sec-referencing",
+    slug: "referencing",
     text: "7.1 Referencing",
   }, {
     level: 2,
@@ -79,7 +68,7 @@ test("book Markdown renders and indexes semantic directives", async () => {
   }]);
   assert.match(
     result.content,
-    /<h2 id="sec-referencing" class="group scroll-mt-24"><span class="text-muted">7\.1 <\/span>Referencing<a [^>]*href="#sec-referencing"[^>]*aria-label="Link to Referencing"[^>]*>#<\/a><\/h2>/,
+    /<h2 id="referencing" class="group scroll-mt-24"><span class="text-muted">7\.1 <\/span>Referencing<a [^>]*href="#referencing"[^>]*aria-label="Link to Referencing"[^>]*>#<\/a><\/h2>/,
   );
   assert.match(
     result.content,
@@ -87,30 +76,40 @@ test("book Markdown renders and indexes semantic directives", async () => {
   );
   assert.match(result.content, /<b>Paragraph label<\/b>/);
   assert.doesNotMatch(result.content, /7\.2\.0\.1/);
-  assert.match(result.content, /data-citation/);
+  assert.match(
+    result.content,
+    /href="\/book\/references\/#source-a"[^>]*>Doe \(2024\)<\/a>/,
+  );
+  assert.match(
+    result.content,
+    /<a (?=[^>]*href="\/target\/")(?=[^>]*data-reference="sec:other")[^>]*>the other section<\/a>/,
+  );
   assert.doesNotMatch(result.content, /<p>See <p>/);
   assert.doesNotMatch(result.content, /class="[^"]*" class="[^"]*"/);
   assert.match(result.content, /data-footnote-ref/);
-  assert.match(result.content, /<span id="table-demo"><\/span>/);
+  assert.match(result.content, /<table id="table-demo">/);
+  assert.doesNotMatch(result.content, /semantic-label/);
 });
 
 test("book Markdown rejects unsupported semantic syntax", async () => {
   await assert.rejects(
     transformBookMarkdown(":cite[source]{mode=unknown}"),
-    /unsupported citation mode "unknown"/,
+    /Unsupported citation mode: unknown/,
   );
   await assert.rejects(
     transformBookMarkdown(":unknown[value]"),
-    /unsupported text directive ":unknown"/,
+    /Unsupported text directive: :unknown/,
   );
   await assert.rejects(
     transformBookMarkdown("::unknown[value]"),
-    /unsupported leaf directive "::unknown"/,
+    /Unsupported leaf directive: ::unknown/,
   );
   await assert.rejects(
-    transformBookMarkdown(
-      "::alias[Missing heading]{target=\"sec:missing\" slug=\"missing-heading\"}",
-    ),
-    /alias "sec:missing" does not match heading slug "missing-heading"/,
+    transformBookMarkdown("::label[sec:missing]"),
+    /Label must follow a block/,
+  );
+  await assert.rejects(
+    transformBookMarkdown(":ref[sec:missing]"),
+    /Missing label: sec:missing/,
   );
 });

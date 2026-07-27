@@ -13,7 +13,7 @@ Thanks to the emergence of online tools like Overleaf, it is easier to use LaTeX
 LaTeX is a typesetting system that is at its best in scientific publishing.
 If you are into programming, you will most likely get comfortable with LaTeX quickly enough.
 In case you are not, there is also a visual editor available in Overleaf that allows you to describe your documents in perhaps a more familiar manner.
-Note that I cover LaTeX in greater detail at :ref[]{target="ap:latex"}.
+Note that I cover LaTeX in greater detail at :ref[ap:latex].
 
 Overleaf is not only about compiling LaTeX code into documents but also about collaboration.
 The collaborative features are essential when you work with others as they let them leave comments for you to consider and develop content together.

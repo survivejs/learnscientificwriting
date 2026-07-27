@@ -29,9 +29,7 @@ For example, in short surveys I explain that I am doing a survey in the introduc
 In addition to the standard ILMRaD structure, I also include a Conclusion chapter at the end of the paper to recap my findings so I have arrived at what you might call ILMRaDC.
 
 The general rule for structuring is that you approach the topic from an abstract angle to motivate the work and bring the reader to the problem in the Introduction, which you then study through a method before starting to go from concrete to abstract again through Discussion, and finally Conclusion.
-To give you a better idea of each possible chapter, I have condensed them to the :ref[]{target="table:ilmrad"} below.
-
-::anchor[table]{target="table:ilmrad"}
+To give you a better idea of each possible chapter, I have condensed them to the :ref[table:ilmrad]{text="table"} below.
 
 | Chapter | Purpose | Writing approach |
 | --- | --- | --- |
@@ -41,6 +39,7 @@ To give you a better idea of each possible chapter, I have condensed them to the
 | Results | Capture your main findings if the paper warrants it (i.e., there are quantitative or qualitative results to explain). :cite[ecarnot2015writing]{mode=textual} cover well how to approach writing the results chapter. | Besides text, use visual aids, such as graphs or tables, to condense information to make it easier to digest |
 | Discussion | Reflect on your key observations | Compared to other chapters, discussion is the most free by its form. In discussion you can consider how your work fits in the broader context. |
 | Conclusion | Bring the reader out of the topic | Remind the reader of your research problem, cover your key findings, and suggest what kind of further research should be done |
+::label[table:ilmrad]
 
 *Chapter types, their purposes and suggested writing approaches as ILMRaDC model partially adapted from :cite[botchkarev2025academic]. Note that occasionally you can skip some of these if you don't need them, especially the middle ones.*
 
@@ -66,7 +65,7 @@ Although there are some rules on how to set up a structure for your work, as hin
 
 Depending on your writing style, you may benefit from planning a structure upfront.
 You should at least put the publication specific chapters into place early since you know you will have to write those eventually.
-It is a good idea to leave space between the beginning and ending chapters for content to appear especially if you work with multiple separate files as I discuss in :ref[]{target="ap:latex"} appendix.
+It is a good idea to leave space between the beginning and ending chapters for content to appear especially if you work with multiple separate files as I discuss in :ref[ap:latex] appendix.
 
 ## Why to develop a narrative
 

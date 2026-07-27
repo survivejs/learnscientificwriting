@@ -2,9 +2,8 @@ LaTeX is a typesetting system that excels at scientific publishing.
 It cannot only be text that it can layout but images as well, and it can even create graphs on the fly for you.
 I won't cover LaTeX in great detail in this context and I recommend checking official [LaTeX documentation](https://www.latex-project.org/) and [Overleaf's 30 minute introduction to LaTeX](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes).
 
-::alias[Create a clear structure in LaTeX]{target="sec:creating-a-structure" slug="create-a-clear-structure-in-latex"}
-
 ## Create a clear structure in LaTeX
+::label[sec:creating-a-structure]
 
 I prefer to separate my chapters as follows to make it easier to work with large amounts of text:
 
@@ -70,9 +69,8 @@ Then, it will pick up the references you use and format them correctly based on 
 If you have online references, use [getbibtex.com](https://www.getbibtex.com/) to format them initially and then fill the missing fields before copying.
 The tool writes the date of access for later retrieval.
 
-::alias[Cite in LaTeX]{target="sec:citing-in-latex" slug="cite-in-latex"}
-
 ## Cite in LaTeX
+::label[sec:citing-in-latex]
 
 LaTeX renders your citations different depending on which citation style you have enabled through BibTeX.
 I have listed the most commonly used citation commands based on :cite[natbib2024] below:
@@ -84,7 +82,7 @@ I have listed the most commonly used citation commands based on :cite[natbib2024
 Occasionally you might have to cite multiple sources at once.
 For this purpose, the cite commands accept multiple parameters like this: `\cite{vepsalainen2024, ryba2021}`. In addition, if you want to point to specific pages within a publication, you can do it through the following syntax: `\cite[p.3-4]{vepsalainen2024}`.
 
-You can see visual examples of citations in chapter :ref[]{target="ch:citing"}.
+You can see visual examples of citations in chapter :ref[ch:citing].
 
 ## Keep track of things to do with todonotes
 

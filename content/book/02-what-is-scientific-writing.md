@@ -1,7 +1,7 @@
 :cite[katz2009research]{mode=textual} defines scientific articles as repositories of scientific observations including recipes to repeat them.
 I think that is a good description of what scientific writing is about as you capture results, share how you acquired them, and then discuss the implications of your findings.
 In other words, you can think of scientific writing as documenting your ideas.
-Typically you will use a specific scientific method or methods to attain scientific results, and then you will capture this information in your paper in manner which often has been restricted to follow scientific format as I have discussed in the chapter :ref[]{target="ch:elements"}.
+Typically you will use a specific scientific method or methods to attain scientific results, and then you will capture this information in your paper in manner which often has been restricted to follow scientific format as I have discussed in the chapter :ref[ch:elements].
 
 ## Scientific results should be presented in a clean manner
 
@@ -27,12 +27,12 @@ You will notice that people from different backgrounds and with different levels
 That is a part of the challenge of scientific writing as you will have to find ways to get your points through while living with the constraints of academic writing.
 In practice, there are several ways to approach the problem and to break my personal myopia to my own content I prefer to get it read by other people quite soon after I have produced the first sensible draft.
 These days tools based on artificial intelligence can provide some form of feedback but I would not rely solely on them but rather use them as a way to gain complimentary insight into your writing.
-I outline several strategies I use in chapter :ref[]{target="ch:editing"} and it is with editing that you can turn a good work into great one while improving your chances of getting your papers read and into the places where you want.
+I outline several strategies I use in chapter :ref[ch:editing] and it is with editing that you can turn a good work into great one while improving your chances of getting your papers read and into the places where you want.
 
 ## Good practices and conventions are there to help
 
 The lucky thing about scientific writing is that there is an established set of good practices that have formed over time that you should follow in your writing to keep it accessible to your readers.
-For example, many readers expect to find a variant of so-called IMRAD structure covered in chapter :ref[]{target="ch:elements"} and following the structure gives your text a degree of readability out of the box.
+For example, many readers expect to find a variant of so-called IMRAD structure covered in chapter :ref[ch:elements] and following the structure gives your text a degree of readability out of the box.
 There is more to scientific writing of course and you will learn more about making your text readable as you go through this book.
 
 ## How does scientific writing differ from other types of authoring?

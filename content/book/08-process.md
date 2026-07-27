@@ -44,7 +44,7 @@ It is worth your while to choose a couple of tools to support your workflow.
 I recommend maintaining a research diary to capture your observations and progress.
 The same concept is commonly known also as a lab notebook and the idea is to put information from your memory to a permanent storage so that it is safe to resume your work without forgetting something essential :cite[samlab2020][^note-8].
 It can be enough to have a single file in your project with paper related notes that includes essential information related to it, such as where you found it and what did you learn from the paper.
-There are sophisticated systems for capturing research papers and related information and I will cover them in the :ref[]{target="ch:technology"} chapter.
+There are sophisticated systems for capturing research papers and related information and I will cover them in the :ref[ch:technology] chapter.
 
 Another, complementary approach is to pull essential points to your initial draft through short references as this helps you in compiling related information together so it is easy to combine the information to complete ideas.
 

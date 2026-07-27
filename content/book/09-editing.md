@@ -15,7 +15,7 @@ Another option could be to approach the work to edit from the end as this detach
 ## Get external people to read your work
 
 It is a good idea to get several external people to read your paper as they will have a fresh perspective on the content and they will be able to provide feedback related to how you introduce the topic and your results.
-Besides feedback from other people, I leverage tools like Grammarly to capture easy mistakes and I discuss these kind of tools in the :ref[]{target="ch:technology"} chapter.
+Besides feedback from other people, I leverage tools like Grammarly to capture easy mistakes and I discuss these kind of tools in the :ref[ch:technology] chapter.
 
 ## Edit for section level clarity
 

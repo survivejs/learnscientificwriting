@@ -51,7 +51,7 @@ Further, good researchers know niches beyond their own and are able to pull idea
 
 The fundamental problem related to choosing your research question is that you know the least at the beginning of a research process and the most at the end.
 For this reason, it is essential to spend time with literature related to your research domain and take notes.
-The fact that you know the least in the beginning has impact on which order you should write and we cover this problem in the Chapter :ref[]{target="ch:elements"}.
+The fact that you know the least in the beginning has impact on which order you should write and we cover this problem in the Chapter :ref[ch:elements].
 
 As you gain experience of your niche, the nature of this problem will change as you have a better awareness of what has been done before and what is to be done.
 That said, inexperienced researchers may approach a topic from an unexpected angle or consider a problem that experiences scientists might overlook.

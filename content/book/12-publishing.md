@@ -33,7 +33,7 @@ Occasionally, you can skip the conference step and go directly for a journal.
 
 #### Consider using search engines to find publishers
 
-As mentioned in the :ref[]{target="ch:technology"} chapter, most likely there's a search, such as Jufo[^note-1], available to you to help figure out the prestige of a publishing venue.
+As mentioned in the :ref[ch:technology] chapter, most likely there's a search, such as Jufo[^note-1], available to you to help figure out the prestige of a publishing venue.
 Occasionally publishers provide their own journal search and for example IEEE has one for computer science related topics[^note-2].
 
 #### Take care to avoid predatory publishers

@@ -15,20 +15,20 @@ All I can do is to provide you a vision of what academic writing entails as a to
 I have structured the book per theme, and technically, you could approach it in any order as it is more like a collection of related tips without a strong narrative.
 I have outlined the contents briefly below:
 
-1. In :ref[]{target="ch:what-is-scientific-writing"}, I consider the special characteristics of scientific writing and show it is different from other types of authoring.
-2. In :ref[]{target="ch:research-question"}, I discuss the significance of choosing your research questions carefully as those shape the rest of the work.
-3. In :ref[]{target="ch:elements"}, I discuss the basic elements expected by a scientific paper.
-4. In :ref[]{target="ch:process"}, I discuss how I approach the process of writing scientific papers.
-5. In :ref[]{target="ch:paragraphs"}, I discuss how to construct paragraphs.
-6. In :ref[]{target="ch:accessibility"}, I discuss how to consider accessibility of your work.
-7. In :ref[]{target="ch:citing"}, I discuss how to cite accurately.
-8. In :ref[]{target="ch:editing"}, I discuss how to take your work from good to great through editing.
-9. In :ref[]{target="ch:troubleshooting"}, I consider how to deal with problems that you might inevitably face in your writing process.
-10. In :ref[]{target="ch:technology"}, I discuss tools I have found useful for writing scientific papers.
-11. In :ref[]{target="ch:publishing"}, I discuss publishing-related aspects in case you want to get your work out there.
-12. In :ref[]{target="ch:popularizing"}, I consider how to popularize your results and create a profile that is visible to other researchers.
-13. In :ref[]{target="ch:resources"}, I mention several resources where to find more information related to writing, as what you see here is only the tip of the iceberg.
-14. In :ref[]{target="ap:latex"} appendix, I go into my LaTeX typesetting system related recommendations.
+1. In :ref[ch:what-is-scientific-writing], I consider the special characteristics of scientific writing and show it is different from other types of authoring.
+2. In :ref[ch:research-question], I discuss the significance of choosing your research questions carefully as those shape the rest of the work.
+3. In :ref[ch:elements], I discuss the basic elements expected by a scientific paper.
+4. In :ref[ch:process], I discuss how I approach the process of writing scientific papers.
+5. In :ref[ch:paragraphs], I discuss how to construct paragraphs.
+6. In :ref[ch:accessibility], I discuss how to consider accessibility of your work.
+7. In :ref[ch:citing], I discuss how to cite accurately.
+8. In :ref[ch:editing], I discuss how to take your work from good to great through editing.
+9. In :ref[ch:troubleshooting], I consider how to deal with problems that you might inevitably face in your writing process.
+10. In :ref[ch:technology], I discuss tools I have found useful for writing scientific papers.
+11. In :ref[ch:publishing], I discuss publishing-related aspects in case you want to get your work out there.
+12. In :ref[ch:popularizing], I consider how to popularize your results and create a profile that is visible to other researchers.
+13. In :ref[ch:resources], I mention several resources where to find more information related to writing, as what you see here is only the tip of the iceberg.
+14. In :ref[ap:latex] appendix, I go into my LaTeX typesetting system related recommendations.
 
 Remember that writing is a process and a journey and the more mileage you gain, the easier it gets.
 Don't forget that also reading counts!

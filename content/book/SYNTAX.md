@@ -1,8 +1,8 @@
 # Book Markdown syntax
 
 Book chapters use standard Markdown wherever possible. Book-specific semantics
-use Satteri directives so citations and cross-references remain structured and
-can be validated at build time.
+use Scholarmark directives so citations and cross-references remain structured
+and can be validated at build time.
 
 ## Chapter structure
 
@@ -23,13 +23,14 @@ labels and do not appear in the table of contents.
 #### Unnumbered paragraph label
 ```
 
-## Heading references
+## Labels and references
 
-Add an explicit id to any heading that other content needs to reference. The id
-becomes both the public fragment and the reference label.
+Add a label immediately after any block that other content needs to reference.
+The same syntax labels headings, tables, figures, and paragraphs.
 
 ```markdown
-## Why citing matters {#sec-citing-accuracy}
+## Why citing matters
+::label[sec:citing-accuracy]
 
 See :ref[sec-citing-accuracy].
 See :ref[sec-citing-accuracy]{text="the earlier discussion"}.
@@ -38,53 +39,24 @@ See :ref[sec-citing-accuracy]{text="the earlier discussion"}.
 Without custom text, `:ref` renders the numbered title of its target. Use
 `text` to override that link text.
 
-Use `target` when the bracket content should be custom link text or when the
-target is a legacy LaTeX label containing a colon.
-
-```markdown
-See :ref[the LaTeX section]{target="sec:citing-in-latex"}.
-```
-
 Top-level chapter labels such as `ch:citing` and `ap:latex` are defined in
-`index.json` and can be referenced in the same way.
+`index.json` and can be referenced in the same way. The site resolves these and
+section labels across separately rendered chapter files.
 
-## Reference aliases
-
-Use an alias when a stable reference label must differ from the public heading
-fragment. Place it immediately before the matching heading.
+For non-heading targets, provide readable custom link text when needed:
 
 ```markdown
-::alias[Cite in LaTeX]{target="sec:citing-in-latex" slug="cite-in-latex"}
-
-## Cite in LaTeX
-```
-
-The attributes are:
-
-- `target`: stable label used by `:ref`.
-- `slug`: public fragment of the matching heading.
-- Bracket content: fallback title used while parsing.
-
-The rendered link text inherits the heading number generated from `index.json`.
-The build fails if the `slug` does not match a heading.
-
-## Standalone anchors
-
-Non-heading targets such as tables use a block anchor.
-
-```markdown
-The results appear in :ref[]{target="table:methods"}.
-
-::anchor[table]{target="table:methods"}
+The results appear in :ref[table:methods]{text="the methods table"}.
 
 | Method | Result |
 | --- | --- |
 | A | 42 |
+::label[table:methods]
 ```
 
-The bracket content is the default link text. `target` is the stable reference
-label. The public fragment defaults to a slugified form of `target`, such as
-`table-methods`, and can be overridden with `slug`.
+Labels may use familiar LaTeX-style keys containing letters, numbers, colons,
+underscores, and hyphens. Duplicate, invalid, and unattached labels fail
+validation.
 
 ## Citations
 

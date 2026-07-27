@@ -1,23 +1,16 @@
+import type { Element, Root, RootContent } from "hast";
 import {
-  defineHastPlugin,
-  defineMdastPlugin,
-  markdownToHtml,
-} from "satteri";
-
-type CitationMode = "parenthetical" | "textual" | "full";
-
-type Citation = {
-  ids: string[];
-  mode: CitationMode;
-  locator?: string;
-  prefix?: string;
-  suffix?: string;
-};
-
-type Reference = {
-  id: string;
-  text?: string;
-};
+  headingNumbersByOffset,
+  renderTree,
+  slugify,
+  toHtml,
+} from "scholarmark";
+import type {
+  CitationFormatContext,
+  CitationFormatter,
+  PublicationCitationEntry,
+  ReferenceTarget,
+} from "scholarmark";
 
 type TableOfContentsEntry = {
   slug: string;
@@ -33,328 +26,346 @@ type SectionEntry = {
 };
 
 type TransformBookMarkdownOptions = {
+  bibliographySource?: string;
   chapterNumber?: string;
+  referenceTargets?: ReadonlyMap<string, ReferenceTarget>;
   sourcePath?: string;
-  renderCitation?: (citation: Citation) => string;
-  renderReference?: (reference: Reference) => string;
+  validateReferences?: boolean;
 };
+
+const headingAnchorClass =
+  "ml-2 inline-block font-sans text-[0.75em] font-normal no-underline text-muted/70 opacity-70 transition-opacity hover:text-slate-950 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-warning focus-visible:ring-offset-2 dark:text-[#8fb9b9] dark:hover:text-[#f7ead0] print:hidden";
 
 async function transformBookMarkdown(
   source: string,
   {
+    bibliographySource = "",
     chapterNumber,
+    referenceTargets = new Map(),
     sourcePath = "<book-markdown>",
-    renderCitation = () => "",
-    renderReference = () => "",
+    validateReferences = true,
   }: TransformBookMarkdownOptions = {},
 ) {
-  const tableOfContents: TableOfContentsEntry[] = [];
-  const sections: SectionEntry[] = [];
-  const aliasSections: SectionEntry[] = [];
-  const matchedAliases = new Set<SectionEntry>();
-  const citationIds = new Set<string>();
-  const foundIds: Record<string, number> = {};
-  const headingNumbers = { h2: 0, h3: 0, h4: 0 };
-
-  const semantics = defineMdastPlugin({
-    name: "book-semantics",
-    textDirective(node, context) {
-      const value = context.textContent(node).trim();
-
-      if (node.name === "cite") {
-        const ids = value.split(",").map((id) => id.trim()).filter(Boolean);
-
-        if (!ids.length) {
-          throw new Error(`${sourcePath}: citation requires at least one id`);
-        }
-
-        const mode = node.attributes?.mode || "parenthetical";
-
-        if (!isCitationMode(mode)) {
-          throw new Error(`${sourcePath}: unsupported citation mode "${mode}"`);
-        }
-
-        ids.forEach((id) => citationIds.add(id));
-
-        return {
-          type: "html",
-          value: renderCitation({
-            ids,
-            mode,
-            locator: attributeValue(node.attributes?.locator),
-            prefix: attributeValue(node.attributes?.prefix),
-            suffix: attributeValue(node.attributes?.suffix),
-          }),
-        };
-      }
-
-      if (node.name === "ref") {
-        const target = attributeValue(node.attributes?.target) || value;
-
-        if (!target) {
-          throw new Error(`${sourcePath}: reference requires an id`);
-        }
-
-        return {
-          type: "html",
-          value: renderReference({
-            id: target,
-            text: attributeValue(node.attributes?.text) ||
-              (node.attributes?.target ? value || undefined : undefined),
-          }),
-        };
-      }
-
-      throw new Error(
-        `${sourcePath}: unsupported text directive ":${node.name}"`,
-      );
-    },
-    leafDirective(node, context) {
-      if (!["alias", "anchor"].includes(node.name)) {
-        throw new Error(
-          `${sourcePath}: unsupported leaf directive "::${node.name}"`,
-        );
-      }
-
-      const title = context.textContent(node).trim();
-      const target = attributeValue(node.attributes?.target);
-
-      if (!target || !title) {
-        throw new Error(
-          `${sourcePath}: anchor requires a title and target`,
-        );
-      }
-
-      const slug = attributeValue(node.attributes?.slug) || slugify(target);
-
-      const section = { label: target, slug, title };
-
-      sections.push(section);
-
-      if (node.name === "alias") {
-        aliasSections.push(section);
-      }
-
-      return {
-        type: "html",
-        value: node.name === "anchor"
-          ? `<span id="${escapeAttribute(slug)}"></span>`
-          : "",
-      };
-    },
-    containerDirective(node) {
-      throw new Error(
-        `${sourcePath}: unsupported container directive ":::${node.name}"`,
-      );
-    },
+  const citationTitles = new Map<string, string>();
+  const citationFormatter = createCitationFormatter(citationTitles);
+  const headingNumbers = prefixHeadingNumbers(source, chapterNumber);
+  const result = await renderTree(source, bibliographySource, "apa", {
+    citationFormatter,
+    headingNumbers,
+    referenceTargets,
   });
-
-  const structure = defineHastPlugin({
-    name: "book-structure",
-    element: [
-      {
-        filter: ["h2", "h3", "h4"],
-        visit(node, context) {
-          const raw = context.textContent(node);
-
-          if (node.tagName === "h4") {
-            context.replaceNode(node, {
-              type: "element",
-              tagName: "b",
-              properties: {},
-              children: node.children,
-            });
-            return;
-          }
-
-          const explicitId = typeof node.properties?.id === "string"
-            ? node.properties.id
-            : undefined;
-
-          if (explicitId === "footnote-label") {
-            return;
-          }
-
-          const slug = explicitId || getUniqueSlug(raw, foundIds);
-          const number = getHeadingNumber(
-            node.tagName,
-            headingNumbers,
-            chapterNumber,
-          );
-          const text = [number, raw].filter(Boolean).join(" ");
-          const matchingAliases = aliasSections.filter((section) =>
-            section.slug === slug
-          );
-
-          for (const matchingAlias of matchingAliases) {
-            matchingAlias.title = text;
-            matchedAliases.add(matchingAlias);
-          }
-
-          context.setProperty(node, "id", slug);
-          context.setProperty(
-            node,
-            "class",
-            "group scroll-mt-24",
-          );
-
-          if (number) {
-            context.prependChild(node, {
-              type: "element",
-              tagName: "span",
-              properties: { class: "text-muted" },
-              children: [{ type: "text", value: `${number} ` }],
-            });
-          }
-
-          context.appendChild(node, {
-            type: "element",
-            tagName: "a",
-            properties: {
-              href: `#${slug}`,
-              class:
-                "ml-2 inline-block font-sans text-[0.75em] font-normal no-underline text-muted/70 opacity-70 transition-opacity hover:text-slate-950 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-warning focus-visible:ring-offset-2 dark:text-[#8fb9b9] dark:hover:text-[#f7ead0] print:hidden",
-              "aria-label": `Link to ${raw}`,
-              title: "Link to this section",
-            },
-            children: [{ type: "text", value: "#" }],
-          });
-
-          tableOfContents.push({
-            slug,
-            level: Number(node.tagName.slice(1)),
-            raw: text,
-            text,
-          });
-
-          if (explicitId) {
-            sections.push({ title: text, label: explicitId, slug });
-          }
-        },
-      },
-      {
-        filter: ["a"],
-        visit(node, context) {
-          const className = node.properties?.className ??
-            node.properties?.class;
-          const classes = Array.isArray(className)
-            ? className.map(String)
-            : typeof className === "string"
-            ? className.split(/\s+/)
-            : [];
-          const classProperty = node.properties &&
-              Object.hasOwn(node.properties, "className")
-            ? "className"
-            : "class";
-
-          if (classes.includes("no-underline")) {
-            return;
-          }
-
-          context.setProperty(
-            node,
-            classProperty,
-            Array.from(new Set(classes.concat("underline"))).join(" "),
-          );
-        },
-      },
-    ],
-  });
-
-  const result = await markdownToHtml(source, {
-    features: {
-      directive: true,
-      frontmatter: true,
-      gfm: true,
-      headingAttributes: true,
-    },
-    mdastPlugins: [semantics],
-    hastPlugins: [structure],
-  });
-
-  const unmatchedAlias = aliasSections.find((section) =>
-    !matchedAliases.has(section)
+  const diagnostics = result.diagnostics.filter((diagnostic) =>
+    validateReferences || !diagnostic.message.startsWith("Missing label:")
   );
 
-  if (unmatchedAlias) {
+  if (diagnostics.some(({ severity }) => severity === "error")) {
     throw new Error(
-      `${sourcePath}: alias "${unmatchedAlias.label}" does not match heading slug "${unmatchedAlias.slug}"`,
+      diagnostics.map(({ message, from, to }) =>
+        `${sourcePath}:${from}-${to}: ${message}`
+      ).join("\n"),
     );
   }
 
+  const sections = attachReferenceTargets(result.tree, result.references);
+  const citationIds = new Set<string>();
+  const headingsById = new Map(
+    result.headings.map((heading) => [heading.id, heading]),
+  );
+
+  visitElements(result.tree, (element) => {
+    delete element.properties.dataSourceFrom;
+    delete element.properties.dataSourceTo;
+
+    if (element.tagName === "h2" || element.tagName === "h3") {
+      if (element.properties.id === "footnote-label") {
+        element.children = element.children.filter((child) =>
+          !isElementWithClass(child, "section-number")
+        );
+        return;
+      }
+
+      const id = typeof element.properties.id === "string"
+        ? element.properties.id
+        : "";
+      const heading = headingsById.get(id);
+
+      element.properties.className = ["group", "scroll-mt-24"];
+
+      const number = element.children.find((child) =>
+        isElementWithClass(child, "section-number")
+      );
+
+      if (number?.type === "element") {
+        number.properties.className = ["text-muted"];
+      }
+
+      element.children.push({
+        type: "element",
+        tagName: "a",
+        properties: {
+          href: `#${id}`,
+          className: headingAnchorClass.split(" "),
+          ariaLabel: `Link to ${heading?.title || id}`,
+          title: "Link to this section",
+        },
+        children: [{ type: "text", value: "#" }],
+      });
+    }
+
+    if (element.tagName === "button" &&
+      hasClass(element, "semantic-citation")) {
+      const id = typeof element.properties.dataCitation === "string"
+        ? element.properties.dataCitation
+        : "";
+
+      if (id) {
+        citationIds.add(id);
+      }
+
+      element.tagName = "a";
+      element.properties = {
+        href: `/book/references/#${id}`,
+        title: citationTitles.get(id),
+        className: ["semantic-citation", "underline"],
+        dataCitation: id,
+      };
+    } else if (element.tagName === "a" &&
+      !hasClass(element, "no-underline")) {
+      addClass(element, "underline");
+    }
+  });
+
+  const tableOfContents: TableOfContentsEntry[] = result.headings.map(
+    ({ depth, id, number, title }) => {
+      const text = [number, title].filter(Boolean).join(" ");
+
+      return { slug: id, level: depth, raw: text, text };
+    },
+  );
+
   return {
     citationIds: Array.from(citationIds),
-    content: result.html,
-    frontmatter: result.frontmatter,
+    content: toHtml(result.tree),
     sections,
     tableOfContents,
   };
 }
 
-function isCitationMode(value: string): value is CitationMode {
-  return ["parenthetical", "textual", "full"].includes(value);
+function prefixHeadingNumbers(source: string, chapterNumber?: string) {
+  const generated = headingNumbersByOffset(source);
+
+  if (!chapterNumber) {
+    return generated;
+  }
+
+  return Object.fromEntries(
+    Object.entries(generated).map(([offset, number]) => [
+      offset,
+      `${chapterNumber}.${number}`,
+    ]),
+  );
 }
 
-function attributeValue(value: string | null | undefined) {
-  return value || undefined;
+function attachReferenceTargets(
+  tree: Root,
+  references: readonly {
+    label: string;
+    title: string;
+  }[],
+): SectionEntry[] {
+  const referencesByLabel = new Map(
+    references.map((reference) => [reference.label, reference]),
+  );
+  const sections: SectionEntry[] = [];
+  const children = tree.children;
+
+  for (let index = 0; index < children.length; index++) {
+    const child = children[index];
+
+    if (child.type !== "element" ||
+      !hasClass(child, "semantic-label") ||
+      typeof child.properties.id !== "string") {
+      continue;
+    }
+
+    const label = child.properties.id;
+    const target = previousElement(children, index);
+    const reference = referencesByLabel.get(label);
+
+    if (!target || !reference) {
+      continue;
+    }
+
+    const targetId = typeof target.properties.id === "string"
+      ? target.properties.id
+      : slugify(label);
+
+    target.properties.id = targetId;
+    sections.push({
+      label,
+      slug: targetId,
+      title: reference.title,
+    });
+  }
+
+  tree.children = children.filter((child) =>
+    child.type !== "element" || !hasClass(child, "semantic-label")
+  );
+
+  return sections;
 }
 
-function getHeadingNumber(
-  type: string,
-  headingNumbers: { h2: number; h3: number; h4: number },
-  chapterNumber?: string,
+function previousElement(children: RootContent[], from: number) {
+  for (let index = from - 1; index >= 0; index--) {
+    const child = children[index];
+
+    if (child?.type === "element") {
+      return child;
+    }
+  }
+
+  return undefined;
+}
+
+function createCitationFormatter(
+  citationTitles: Map<string, string>,
+): CitationFormatter {
+  return {
+    formatCitation(entry, context) {
+      citationTitles.set(entry.id, formatReferenceTitle(entry));
+      return formatCitation(entry, context);
+    },
+    formatBibliography(entry) {
+      return formatFullCitation(entry);
+    },
+  };
+}
+
+function formatCitation(
+  entry: PublicationCitationEntry,
+  { mode }: CitationFormatContext,
 ) {
-  if (type === "h2") {
-    headingNumbers.h2++;
-    headingNumbers.h3 = 0;
-    headingNumbers.h4 = 0;
-
-    return [chapterNumber, headingNumbers.h2].filter(Boolean).join(".");
+  if (mode === "textual") {
+    return `${formatCitationAuthors(entry)} (${entry.year || "n.d."})`;
+  }
+  if (mode === "full") {
+    return formatFullCitation(entry);
   }
 
-  if (type === "h3") {
-    headingNumbers.h3++;
-    headingNumbers.h4 = 0;
+  return `${formatCitationAuthors(entry)}, ${entry.year || "n.d."}`;
+}
 
-    return [chapterNumber, headingNumbers.h2, headingNumbers.h3]
-      .filter((part) => part !== undefined && part !== "")
-      .join(".");
+function formatCitationAuthors(entry: PublicationCitationEntry) {
+  const authors = entry.authors.map((author) =>
+    author.family || author.literal || author.given || ""
+  ).filter(Boolean);
+
+  if (authors.length <= 1) {
+    return authors[0] || entry.id;
+  }
+  if (authors.length === 2) {
+    return `${authors[0]} & ${authors[1]}`;
   }
 
-  headingNumbers.h4++;
-
-  return [chapterNumber, headingNumbers.h2, headingNumbers.h3, headingNumbers.h4]
-    .filter((part) => part !== undefined && part !== "")
-    .join(".");
+  return `${authors[0]} et al.`;
 }
 
-function getUniqueSlug(raw: string, foundIds: Record<string, number>) {
-  let slug = slugify(raw);
+function formatReferenceAuthors(entry: PublicationCitationEntry) {
+  const authors = entry.authors.map((author) => {
+    if (author.literal) {
+      return author.literal;
+    }
 
-  if (foundIds[slug]) {
-    foundIds[slug]++;
-    slug += `-${foundIds[slug]}`;
-  } else {
-    foundIds[slug] = 1;
+    const initials = (author.given || "").split(/\s+/).filter(Boolean)
+      .map((part) => `${part[0]}.`).join(" ");
+
+    return [author.family, initials].filter(Boolean).join(", ");
+  }).filter(Boolean);
+
+  if (authors.length === 0) {
+    return "Unknown author";
+  }
+  if (authors.length === 1) {
+    return authors[0];
+  }
+  if (authors.length === 2) {
+    return `${authors[0]} & ${authors[1]}`;
   }
 
-  return slug;
+  return `${authors.slice(0, -1).join(", ")}, & ${authors.at(-1)}`;
 }
 
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/`/g, "")
-    .replace(/[^\w]+/g, "-");
+function formatFullCitation(entry: PublicationCitationEntry) {
+  const source = formatReferenceSource(entry.data);
+
+  return [
+    formatReferenceAuthors(entry),
+    `(${entry.year || "n.d."}).`,
+    `${entry.title || entry.id}.`,
+    source,
+  ].filter(Boolean).join(" ");
 }
 
-function escapeAttribute(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+function formatReferenceTitle(entry: PublicationCitationEntry) {
+  return [
+    formatReferenceAuthors(entry),
+    `(${entry.year || "n.d."}).`,
+    entry.title || entry.id,
+  ].filter(Boolean).join(" ");
 }
 
-export type { Citation, Reference };
+function formatReferenceSource(fields: Record<string, unknown>) {
+  const text = (key: string) =>
+    typeof fields[key] === "string" ? fields[key] : "";
+
+  return [
+    text("container-title"),
+    text("publisher"),
+    text("publisher-place"),
+    text("volume") ? `vol. ${text("volume")}` : "",
+    text("issue") ? `no. ${text("issue")}` : "",
+    text("page") ? `pp. ${text("page").replace(/--/g, "-")}` : "",
+  ].filter(Boolean).join(", ");
+}
+
+function visitElements(
+  node: Root | Element,
+  visitor: (element: Element) => void,
+) {
+  for (const child of node.children) {
+    if (child.type !== "element") {
+      continue;
+    }
+
+    visitor(child);
+    visitElements(child, visitor);
+  }
+}
+
+function hasClass(element: Element, className: string) {
+  const classes = element.properties.className;
+
+  return Array.isArray(classes)
+    ? classes.map(String).includes(className)
+    : typeof classes === "string" && classes.split(/\s+/).includes(className);
+}
+
+function addClass(element: Element, className: string) {
+  const classes = Array.isArray(element.properties.className)
+    ? element.properties.className.map(String)
+    : typeof element.properties.className === "string"
+    ? element.properties.className.split(/\s+/)
+    : [];
+
+  element.properties.className = Array.from(new Set(classes.concat(className)));
+}
+
+function isElementWithClass(
+  node: RootContent,
+  className: string,
+): node is Element {
+  return node.type === "element" && hasClass(node, className);
+}
+
+export type { SectionEntry, TransformBookMarkdownOptions };
 export default transformBookMarkdown;
