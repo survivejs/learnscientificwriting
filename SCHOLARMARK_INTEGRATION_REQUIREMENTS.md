@@ -1,5 +1,8 @@
 # Scholarmark integration requirements
 
+> Status: implemented in Scholarmark 0.3.0 and integrated into this project.
+> This document is retained as the design and acceptance record.
+
 This document describes the small upstream additions needed to replace the
 custom scientific Markdown implementation in
 [`survivejs/learnscientificwriting`](https://github.com/survivejs/learnscientificwriting)
