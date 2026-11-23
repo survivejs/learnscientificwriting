@@ -1,0 +1,33 @@
+<BaseLayout>
+  <slot name="content">
+    <div class="mx-auto max-w-4xl px-4 py-16 sm:py-24">
+      <div
+        class="grid gap-6 border-t-4 border-secondary pt-6 sm:grid-cols-[auto_1fr] sm:gap-12 sm:pt-8 dark:border-[#8fb9b9]"
+      >
+        <p class="font-serif text-7xl leading-none text-muted md:text-8xl dark:text-[#8fb9b9]">
+          404
+        </p>
+        <div class="sm:border-l sm:border-muted/30 sm:pl-12 dark:sm:border-[#8fb9b9]/35">
+          <h1 class="font-serif text-4xl font-bold leading-tight md:text-6xl">
+            Page not found
+          </h1>
+          <p class="mt-4 max-w-md text-lg leading-relaxed">
+            Looking for a chapter? You can find every chapter in the book’s table of contents.
+          </p>
+          <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <a
+              class="inline-flex rounded bg-slate-950 px-5 py-3 font-semibold text-white hover:bg-muted dark:bg-[#f5ead8] dark:text-[#15130f] dark:hover:bg-[#d9cdb8]"
+              href="/book/"
+              >Table of contents</a
+            >
+            <a
+              class="font-medium text-muted underline decoration-warning underline-offset-4 hover:text-slate-950 dark:text-[#8fb9b9] dark:hover:text-[#f7ead0]"
+              href="/"
+              >Back to home</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </slot>
+</BaseLayout>

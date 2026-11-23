@@ -16,6 +16,17 @@
     },
     "scripts": [{ "name": "theme-toggle" }]
   },
+  "404.html": {
+    "layout": "notFound",
+    "context": {
+      "meta": {
+        "title": "Page not found · Learn scientific writing",
+        "description": "Find your way back to the book’s table of contents.",
+        "noindex": true
+      }
+    },
+    "scripts": [{ "name": "theme-toggle" }]
+  },
   "book": {
     "layout": "bookIndex",
     "context": {

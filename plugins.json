@@ -58,7 +58,8 @@
       }
     },
     {
-      "path": "./node_modules/gustwind/plugins/sitemap/mod.js"
+      "path": "./node_modules/gustwind/plugins/sitemap/mod.js",
+      "options": { "excludeNoindex": true }
     },
     {
       "path": "./node_modules/gustwind/plugins/stats/mod.js"
